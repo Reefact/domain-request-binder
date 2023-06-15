@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Reefact.DomainRequestBinder.NetStandard20\Reefact.DomainRequestBinder.NetStandard20.csproj" />
+    <ProjectReference Include="..\Reefact.RequestValidation.Net70\Reefact.RequestValidation.Net70.csproj" />
   </ItemGroup>
 
-  <Import Project="..\Reefact.DomainRequestBinder.UnitTests\Reefact.DomainRequestBinder.UnitTests.projitems" Label="Shared" />
+  <Import Project="..\Reefact.RequestValidation.UnitTests\Reefact.RequestValidation.UnitTests.projitems" Label="Shared" />
 
 </Project>

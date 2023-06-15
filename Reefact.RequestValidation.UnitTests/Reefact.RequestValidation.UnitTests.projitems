@@ -3,9 +3,12 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>b37e0f4e-2ef3-41d0-bd50-205deaea92bc</SharedGUID>
+    <SharedGUID>80ea39b2-e23a-466c-b5ec-131b45aed4c1</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Reefact.DomainRequestBinder</Import_RootNamespace>
+    <Import_RootNamespace>Reefact.RequestValidation.UnitTests</Import_RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator_should.cs" />
+  </ItemGroup>
 </Project>
