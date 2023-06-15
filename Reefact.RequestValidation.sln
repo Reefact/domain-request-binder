@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{0AB2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{724DEBC1-67C3-45D3-8B9B-1B0061BA55A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reefact.RequestValidation.Net46", "Reefact.RequestValidation.Net46\Reefact.RequestValidation.Net46.csproj", "{15B9A689-0AAA-44F1-84A2-2040EFD6D4DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reefact.RequestValidation.Net462", "Reefact.RequestValidation.Net46\Reefact.RequestValidation.Net462.csproj", "{15B9A689-0AAA-44F1-84A2-2040EFD6D4DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reefact.RequestValidation.NetStandard20", "Reefact.RequestValidation.NetStandard20\Reefact.RequestValidation.NetStandard20.csproj", "{0252CA54-D310-43CB-AC6E-8EFFD82C9082}"
 EndProject
