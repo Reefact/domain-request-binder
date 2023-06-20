@@ -9,6 +9,18 @@
     <Import_RootNamespace>Reefact.RequestValidation.UnitTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\AnyId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember_v1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequestValidator_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Temperature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureUnit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Temperature_v1.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)__forTesting\" />
   </ItemGroup>
 </Project>

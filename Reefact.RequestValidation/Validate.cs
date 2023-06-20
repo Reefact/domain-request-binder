@@ -2,6 +2,8 @@
 
 using System;
 
+using Reefact.RequestValidation.Configuration;
+
 #endregion
 
 namespace Reefact.RequestValidation {
@@ -10,10 +12,10 @@ namespace Reefact.RequestValidation {
 
         #region Statics members declarations
 
-        public static RequestValidator<TRequest> Request<TRequest>(TRequest request) {
+        public static RequestConverter<TRequest> Request<TRequest>(TRequest request) {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
 
-            return new RequestValidator<ApplicationException, TRequest>(request);
+            return new RequestConverter<ApplicationException, TRequest>(request, ValidationOptions.Instance.PropertyNameProvider);
         }
 
         public static ArgumentsValidator Arguments() {

@@ -24,13 +24,20 @@ namespace Reefact.RequestValidation {
 
         #region Fields declarations
 
+        private readonly string                _argPrefix;
         private readonly List<ValidationError> _errors = new List<ValidationError>();
 
         #endregion
 
         #region Constructors declarations
 
-        internal ArgumentsValidator() { }
+        internal ArgumentsValidator() {
+            _argPrefix = null;
+        }
+
+        internal ArgumentsValidator(string prefix) {
+            _argPrefix = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
+        }
 
         #endregion
 
@@ -41,20 +48,28 @@ namespace Reefact.RequestValidation {
             if (argName         == null) { throw new ArgumentNullException(nameof(argName)); }
             if (convertArgValue == null) { throw new ArgumentNullException(nameof(convertArgValue)); }
 
+            string argFullName = GetArgFullName(argName);
+
             if (argValue == null) {
-                var error = new ValidationError(argName, "Argument is required.");
+                var error = new ValidationError(argFullName, "Argument is required.");
                 _errors.Add(error);
 
-                return RequiredArgument.CreateInvalid<TOutput>(argName, null);
+                return RequiredArgument.CreateInvalid<TOutput>(argFullName, null);
             }
 
             try {
                 TOutput                   convertedArgValue = convertArgValue(argValue);
-                RequiredArgument<TOutput> convertRequired   = RequiredArgument.CreateValid(argName, argValue, convertedArgValue);
+                RequiredArgument<TOutput> convertRequired   = RequiredArgument.CreateValid(argFullName, argValue, convertedArgValue);
+
+                return convertRequired;
+            } catch (BadRequestException ex) {
+                _errors.AddRange(ex.ValidationErrors);
+
+                RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argFullName, argValue);
 
                 return convertRequired;
             } catch (THandledException ex) {
-                var error = new ValidationError(argName, ex.Message);
+                var error = new ValidationError(argFullName, ex.Message);
                 _errors.Add(error);
                 RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argName, argValue);
 
@@ -66,15 +81,17 @@ namespace Reefact.RequestValidation {
             if (argName         == null) { throw new ArgumentNullException(nameof(argName)); }
             if (convertArgValue == null) { throw new ArgumentNullException(nameof(convertArgValue)); }
 
+            string argFullName = GetArgFullName(argName);
+
             try {
                 TOutput                   convertedArgValue = convertArgValue(argValue);
-                OptionalArgument<TOutput> convertRequired   = OptionalArgument.CreateValid(argName, argValue, convertedArgValue);
+                OptionalArgument<TOutput> convertRequired   = OptionalArgument.CreateValid(argFullName, argValue, convertedArgValue);
 
                 return convertRequired;
             } catch (THandledException ex) {
-                var error = new ValidationError(argName, ex.Message);
+                var error = new ValidationError(argFullName, ex.Message);
                 _errors.Add(error);
-                OptionalArgument<TOutput> convertRequired = OptionalArgument.CreateInvalid<TOutput>(argName, argValue);
+                OptionalArgument<TOutput> convertRequired = OptionalArgument.CreateInvalid<TOutput>(argFullName, argValue);
 
                 return convertRequired;
             }
@@ -83,12 +100,14 @@ namespace Reefact.RequestValidation {
         public RequiredArgument<TValue> IsRequired<TValue>(string argName, TValue argValue) {
             if (argName == null) { throw new ArgumentNullException(nameof(argName)); }
 
-            if (argValue != null) { return RequiredArgument.CreateValid(argName, argValue, argValue); }
+            string argFullName = GetArgFullName(argName);
 
-            var error = new ValidationError(argName, "Argument is required.");
+            if (argValue != null) { return RequiredArgument.CreateValid(argFullName, argValue, argValue); }
+
+            var error = new ValidationError(argFullName, "Argument is required.");
             _errors.Add(error);
 
-            return RequiredArgument.CreateInvalid<TValue>(argName, argValue);
+            return RequiredArgument.CreateInvalid<TValue>(argFullName, argValue);
         }
 
         public void AddError(ValidationError error) {
@@ -116,6 +135,12 @@ namespace Reefact.RequestValidation {
             if (_errors.Count == 1) { return "1 error has been detected."; }
 
             return $"{_errors.Count} errors have been detected.";
+        }
+
+        private string GetArgFullName(string argName) {
+            if (_argPrefix == null) { return argName; }
+
+            return $"{_argPrefix}.{argName}";
         }
 
     }
