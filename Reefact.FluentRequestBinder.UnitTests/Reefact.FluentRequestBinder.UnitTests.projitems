@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>80ea39b2-e23a-466c-b5ec-131b45aed4c1</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Reefact.FluentRequestBinder.UnitTests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\AnyId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember_v1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequestValidator_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Temperature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureUnit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\TemperatureUnitConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Temperature_v1.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)__forTesting\" />
+  </ItemGroup>
+</Project>
