@@ -4,26 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Reefact.FluentRequestBinder.Configuration;
+
 #endregion
 
 namespace Reefact.FluentRequestBinder {
 
-    public interface ArgumentsValidator : Validator {
-
-        RequiredArgument<TOutput> ConvertRequired<TInput, TOutput>(string argName, TInput argValue, Func<TInput, TOutput> convertArgValue);
-
-        OptionalArgument<TOutput> ConvertOptional<TInput, TOutput>(string argName, TInput argValue, Func<TInput, TOutput> convertArgValue);
-
-        RequiredArgument<TValue> IsRequired<TValue>(string argName, TValue argValue);
-
-    }
-
     [DebuggerDisplay("{ToString()}")]
-    public sealed class ArgumentsValidator<THandledException> : ArgumentsValidator
-        where THandledException : ApplicationException {
+    public sealed class ArgumentsValidator : Validator {
 
         #region Fields declarations
 
+        private readonly ValidationOptions     _validationOptions;
         private readonly string                _argPrefix;
         private readonly List<ValidationError> _errors = new List<ValidationError>();
 
@@ -31,18 +23,26 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        internal ArgumentsValidator() {
-            _argPrefix = null;
+        internal ArgumentsValidator(ValidationOptions validationOptions) {
+            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
+
+            _validationOptions = validationOptions;
+            _argPrefix         = null;
         }
 
-        internal ArgumentsValidator(string prefix) {
-            _argPrefix = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
+        internal ArgumentsValidator(ValidationOptions validationOptions, string prefix) {
+            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
+
+            _validationOptions = validationOptions;
+            _argPrefix         = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
         }
 
         #endregion
 
         public bool HasError   => _errors.Count > 0;
         public int  ErrorCount => _errors.Count;
+
+        internal ValidationOptions Options => _validationOptions;
 
         public RequiredArgument<TOutput> ConvertRequired<TInput, TOutput>(string argName, TInput argValue, Func<TInput, TOutput> convertArgValue) {
             if (argName         == null) { throw new ArgumentNullException(nameof(argName)); }
@@ -68,7 +68,9 @@ namespace Reefact.FluentRequestBinder {
                 RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argFullName, argValue);
 
                 return convertRequired;
-            } catch (THandledException ex) {
+            } catch (ApplicationException ex) {
+                if (!_validationOptions.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+
                 var error = new ValidationError(argFullName, ex.Message);
                 _errors.Add(error);
                 RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argName, argValue);
@@ -88,7 +90,9 @@ namespace Reefact.FluentRequestBinder {
                 OptionalArgument<TOutput> convertRequired   = OptionalArgument.CreateValid(argFullName, argValue, convertedArgValue);
 
                 return convertRequired;
-            } catch (THandledException ex) {
+            } catch (ApplicationException ex) {
+                if (!_validationOptions.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+
                 var error = new ValidationError(argFullName, ex.Message);
                 _errors.Add(error);
                 OptionalArgument<TOutput> convertRequired = OptionalArgument.CreateInvalid<TOutput>(argFullName, argValue);

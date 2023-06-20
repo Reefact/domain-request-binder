@@ -6,20 +6,14 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 
+using Reefact.FluentRequestBinder.Configuration;
+
 #endregion
 
 namespace Reefact.FluentRequestBinder {
 
-    public interface RequestConverter<TRequest> : Validator {
-
-        SimplePropertyConverter<TInput>  SimpleProperty<TInput>(Expression<Func<TRequest, TInput>>  property);
-        ComplexPropertyConverter<TInput> ComplexProperty<TInput>(Expression<Func<TRequest, TInput>> property);
-
-    }
-
     [DebuggerDisplay("{ToString()}")]
-    public sealed class RequestConverter<THandledException, TRequest> : RequestConverter<TRequest>
-        where THandledException : ApplicationException {
+    public sealed class RequestConverter<TRequest> : Validator {
 
         #region Statics members declarations
 
@@ -37,30 +31,30 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly TRequest                              _request;
-        private readonly PropertyNameProvider                       _argNameProvider;
-        private readonly ArgumentsValidator<THandledException> _argumentsValidator;
+        private readonly TRequest           _request;
+        private readonly ValidationOptions  _validationOptions;
+        private readonly ArgumentsValidator _argumentsValidator;
 
         #endregion
 
         #region Constructors declarations
 
-        internal RequestConverter(TRequest request, PropertyNameProvider argNameProvider) {
+        internal RequestConverter(TRequest request, ValidationOptions validationOptions) {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
-            if (argNameProvider is null) { throw new ArgumentNullException(nameof(argNameProvider)); }
+            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
             _request            = request;
-            _argNameProvider    = argNameProvider;
-            _argumentsValidator = new ArgumentsValidator<THandledException>();
+            _validationOptions  = validationOptions;
+            _argumentsValidator = new ArgumentsValidator(validationOptions);
         }
 
-        internal RequestConverter(TRequest request, PropertyNameProvider argNameProvider, string argNamePrefix) {
+        internal RequestConverter(TRequest request, ValidationOptions validationOptions, string argNamePrefix) {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
-            if (argNameProvider is null) { throw new ArgumentNullException(nameof(argNameProvider)); }
+            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
             _request            = request;
-            _argNameProvider    = argNameProvider;
-            _argumentsValidator = new ArgumentsValidator<THandledException>(argNamePrefix);
+            _validationOptions  = validationOptions;
+            _argumentsValidator = new ArgumentsValidator(validationOptions, argNamePrefix);
         }
 
         #endregion
@@ -70,22 +64,20 @@ namespace Reefact.FluentRequestBinder {
         /// <inheritdoc />
         public int ErrorCount => _argumentsValidator.ErrorCount;
 
-        /// <inheritdoc />
         public SimplePropertyConverter<TInput> SimpleProperty<TInput>(Expression<Func<TRequest, TInput>> expression) {
             PropertyInfo propertyInfo = GetPropertyInfo(expression);
-            string       argName      = _argNameProvider.GetName(propertyInfo);
+            string       argName      = _validationOptions.PropertyNameProvider.GetName(propertyInfo);
             var          argValue     = (TInput)propertyInfo.GetValue(_request);
 
-            return new SimplePropertyConverterImp<THandledException, TInput>(_argumentsValidator, argName, argValue);
+            return new SimplePropertyConverter<TInput>(_argumentsValidator, argName, argValue);
         }
 
-        /// <inheritdoc />
         public ComplexPropertyConverter<TInput> ComplexProperty<TInput>(Expression<Func<TRequest, TInput>> expression) {
             PropertyInfo propertyInfo = GetPropertyInfo(expression);
-            string       argName      = _argNameProvider.GetName(propertyInfo);
+            string       argName      = _validationOptions.PropertyNameProvider.GetName(propertyInfo);
             var          argValue     = (TInput)propertyInfo.GetValue(_request);
 
-            return new ComplexPropertyConverterImp<THandledException, TInput>(_argumentsValidator, argName, argValue);
+            return new ComplexPropertyConverter<TInput>(_argumentsValidator, argName, argValue);
         }
 
         /// <inheritdoc />

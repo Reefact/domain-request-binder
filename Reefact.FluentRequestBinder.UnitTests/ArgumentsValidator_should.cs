@@ -10,6 +10,7 @@ using Xunit;
 
 using System.Linq;
 
+using Reefact.FluentRequestBinder.Configuration;
 using Reefact.FluentRequestBinder.UnitTests.__forTesting;
 
 #endregion
@@ -33,7 +34,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_conversion_of_one_valid_input() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             var                anyName   = "teamId";
             // Exercise
@@ -54,7 +55,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_conversion_of_one_missing_required_input() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             var                anyName   = "teamId";
             // Exercise
             RequiredArgument<AnyId> id = validator.ConvertRequired(anyName, (Guid?)null, AnyId.From);
@@ -80,7 +81,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_failing_conversion_of_one_required_input() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             var                anyName   = "teamId";
             // Exercise
@@ -106,7 +107,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_conversion_of_two_valid_input() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             // Exercise
             validator.ConvertRequired("arg1", anyGuid, AnyId.From);
@@ -119,7 +120,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_conversion_of_one_valid_input_and_one_missing_required_input() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             // Exercise
             validator.ConvertRequired("arg1", (Guid?)null, AnyId.From);
             validator.ConvertRequired("arg2", "oui", FrenchYesNoConvert);
@@ -138,7 +139,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void handle_correctly_the_conversion_of_one_valid_input_and_one_missing_required_input_and_one_failing_conversion() {
             // Setup
-            ArgumentsValidator validator = Validate.Arguments();
+            ArgumentsValidator validator = Bind.Arguments();
             // Exercise
             validator.ConvertRequired("arg1", (Guid?)null, AnyId.From);
             validator.ConvertRequired("arg2", "oui", FrenchYesNoConvert);

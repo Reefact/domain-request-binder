@@ -10,32 +10,32 @@ namespace Reefact.FluentRequestBinder.Configuration {
 
         #region Statics members declarations
 
-        public static readonly ValidationOptions Instance = new ValidationOptions();
+        internal static ValidationOptions Default = new ValidationOptions(new DefaultPropertyNameProvider(), typeof(ApplicationException));
 
-        #endregion
+        public static ValidationOptions Instance = Default;
 
-        #region Fields declarations
+        public static void Configure(ValidationOptionsBuilder validationOptions) {
+            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-        private PropertyNameProvider _argNameProvider;
-
+            Instance = validationOptions.Build();
+        }
+        
         #endregion
 
         #region Constructors declarations
 
-        private ValidationOptions() {
-            _argNameProvider = new DefaultPropertyNameProvider();
+        internal ValidationOptions(PropertyNameProvider propertyNameProvider, Type handledExceptionType) {
+            if (propertyNameProvider is null) { throw new ArgumentNullException(nameof(propertyNameProvider)); }
+            if (handledExceptionType is null) { throw new ArgumentNullException(nameof(handledExceptionType)); }
+
+            PropertyNameProvider = propertyNameProvider;
+            HandledExceptionType = handledExceptionType;
         }
 
         #endregion
 
-        public PropertyNameProvider PropertyNameProvider {
-            get { return _argNameProvider; }
-            set {
-                if (value == null) { throw new ArgumentNullException(nameof(value)); }
-
-                _argNameProvider = value;
-            }
-        }
+        public PropertyNameProvider PropertyNameProvider { get; }
+        public Type                 HandledExceptionType { get; }
 
     }
 

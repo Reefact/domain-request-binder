@@ -8,19 +8,20 @@ using Reefact.FluentRequestBinder.Configuration;
 
 namespace Reefact.FluentRequestBinder {
 
-    public static class Validate {
+    public static class Bind {
 
         #region Statics members declarations
 
-        public static RequestConverter<TRequest> Request<TRequest>(TRequest request) {
+        public static RequestConverter<TRequest> PropertiesOf<TRequest>(TRequest request) {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
 
-            return new RequestConverter<ApplicationException, TRequest>(request, ValidationOptions.Instance.PropertyNameProvider);
+            return new RequestConverter<TRequest>(request, ValidationOptions.Instance);
         }
-
+    
         public static ArgumentsValidator Arguments() {
-            return new ArgumentsValidator<ApplicationException>();
+            return new ArgumentsValidator(ValidationOptions.Instance);
         }
+     
 
         #endregion
 
