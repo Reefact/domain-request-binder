@@ -9,6 +9,7 @@
     <Import_RootNamespace>Reefact.FluentRequestBinder.UnitTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)RequiredArgument_should.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)__forTesting\AnyId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator_should.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember.cs" />

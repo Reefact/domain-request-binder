@@ -14,13 +14,13 @@ namespace Reefact.FluentRequestBinder {
         public static RequiredArgument<TOutput> CreateValid<TOutput>(string argName, object argValue, TOutput convertedArgValue) {
             if (argName == null) { throw new ArgumentNullException(nameof(argName)); }
 
-            return new RequiredArgument<TOutput>(argName, argValue, convertedArgValue, true);
+            return new RequiredArgument<TOutput>(argName, argValue, convertedArgValue);
         }
 
         public static RequiredArgument<TOutput> CreateInvalid<TOutput>(string argName, object argValue) {
             if (argName == null) { throw new ArgumentNullException(nameof(argName)); }
 
-            return new RequiredArgument<TOutput>(argName, argValue, default, false);
+            return new RequiredArgument<TOutput>(argName, argValue);
         }
 
         #endregion
@@ -44,15 +44,24 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        internal RequiredArgument(string argName, object originalValue, TConvertedValue convertedArgValue, bool isValid) {
-            if (argName == null) { throw new ArgumentNullException(nameof(argName)); }
-            if (isValid && convertedArgValue == null) { throw new ArgumentException("A required argument could not be valid if argument original value is null.", nameof(convertedArgValue)); }
-            if (isValid && convertedArgValue == null) { throw new ArgumentException("A required argument could not be valid if converted argument value is null.", nameof(convertedArgValue)); }
+        internal RequiredArgument(string argName, object originalValue, TConvertedValue convertedArgValue) {
+            if (argName           == null) { throw new ArgumentNullException(nameof(argName)); }
+            if (originalValue     == null) { throw new ArgumentException("A required argument could not be valid if argument original value is null.", nameof(originalValue)); }
+            if (convertedArgValue == null) { throw new ArgumentException("A required argument could not be valid if converted argument value is null.", nameof(convertedArgValue)); }
 
             Name          = argName;
             OriginalValue = originalValue;
             _value        = convertedArgValue;
-            IsValid       = isValid;
+            IsValid       = true;
+        }
+
+        internal RequiredArgument(string argName, object originalValue) {
+            if (argName       == null) { throw new ArgumentNullException(nameof(argName)); }
+
+            Name          = argName;
+            OriginalValue = originalValue;
+            _value        = default;
+            IsValid       = false;
         }
 
         #endregion
