@@ -18,8 +18,8 @@ namespace Reefact.FluentRequestBinder {
             return new RequestConverter<TRequest>(request, ValidationOptions.Instance);
         }
     
-        public static ArgumentsValidator Arguments() {
-            return new ArgumentsValidator(ValidationOptions.Instance);
+        public static ArgumentsConverter Arguments() {
+            return new ArgumentsConverter(ValidationOptions.Instance);
         }
      
 

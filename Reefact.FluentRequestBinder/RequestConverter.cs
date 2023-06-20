@@ -33,7 +33,7 @@ namespace Reefact.FluentRequestBinder {
 
         private readonly TRequest           _request;
         private readonly ValidationOptions  _validationOptions;
-        private readonly ArgumentsValidator _argumentsValidator;
+        private readonly ArgumentsConverter _argumentsValidator;
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace Reefact.FluentRequestBinder {
 
             _request            = request;
             _validationOptions  = validationOptions;
-            _argumentsValidator = new ArgumentsValidator(validationOptions);
+            _argumentsValidator = new ArgumentsConverter(validationOptions);
         }
 
         internal RequestConverter(TRequest request, ValidationOptions validationOptions, string argNamePrefix) {
@@ -54,7 +54,7 @@ namespace Reefact.FluentRequestBinder {
 
             _request            = request;
             _validationOptions  = validationOptions;
-            _argumentsValidator = new ArgumentsValidator(validationOptions, argNamePrefix);
+            _argumentsValidator = new ArgumentsConverter(validationOptions, argNamePrefix);
         }
 
         #endregion

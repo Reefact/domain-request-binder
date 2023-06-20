@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BadRequestException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ComplexPropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptionsBuilder.cs" />

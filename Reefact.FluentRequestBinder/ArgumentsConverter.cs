@@ -11,7 +11,7 @@ using Reefact.FluentRequestBinder.Configuration;
 namespace Reefact.FluentRequestBinder {
 
     [DebuggerDisplay("{ToString()}")]
-    public sealed class ArgumentsValidator : Validator {
+    public sealed class ArgumentsConverter : Validator {
 
         #region Fields declarations
 
@@ -23,14 +23,14 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        internal ArgumentsValidator(ValidationOptions validationOptions) {
+        internal ArgumentsConverter(ValidationOptions validationOptions) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
             _validationOptions = validationOptions;
             _argPrefix         = null;
         }
 
-        internal ArgumentsValidator(ValidationOptions validationOptions, string prefix) {
+        internal ArgumentsConverter(ValidationOptions validationOptions, string prefix) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
             _validationOptions = validationOptions;

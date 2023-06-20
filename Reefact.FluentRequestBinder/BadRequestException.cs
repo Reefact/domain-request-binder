@@ -12,7 +12,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        public static BadRequestException From(ArgumentsValidator validator) {
+        public static BadRequestException From(ArgumentsConverter validator) {
             return new BadRequestException(validator.GetErrors().ToArray());
         }
 

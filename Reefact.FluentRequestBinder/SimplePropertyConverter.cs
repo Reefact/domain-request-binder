@@ -10,7 +10,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly ArgumentsValidator _argumentsValidator;
+        private readonly ArgumentsConverter _argumentsValidator;
         private readonly string             _argName;
         private readonly TInput             _argValue;
 
@@ -18,7 +18,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        public SimplePropertyConverter(ArgumentsValidator argumentsValidator, string argName, TInput argValue) {
+        public SimplePropertyConverter(ArgumentsConverter argumentsValidator, string argName, TInput argValue) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
             if (argName is null) { throw new ArgumentNullException(nameof(argName)); }
 
