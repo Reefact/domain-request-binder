@@ -26,11 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{0AB2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{724DEBC1-67C3-45D3-8B9B-1B0061BA55A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reefact.FluentRequestBinder.Net462", "Reefact.FluentRequestBinder.Net46\Reefact.FluentRequestBinder.Net462.csproj", "{15B9A689-0AAA-44F1-84A2-2040EFD6D4DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reefact.FluentRequestBinder.Net462", "Reefact.FluentRequestBinder.Net462\Reefact.FluentRequestBinder.Net462.csproj", "{15B9A689-0AAA-44F1-84A2-2040EFD6D4DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reefact.FluentRequestBinder.NetStandard20", "Reefact.FluentRequestBinder.NetStandard20\Reefact.FluentRequestBinder.NetStandard20.csproj", "{0252CA54-D310-43CB-AC6E-8EFFD82C9082}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reefact.FluentRequestBinder.Net70.UnitTests", "Reefact.FluentRequestBinder.NetStandard20.UnitTests\Reefact.FluentRequestBinder.Net70.UnitTests.csproj", "{19A4A090-B65E-4A32-AD29-3FB724564E01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reefact.FluentRequestBinder.Net70.UnitTests", "Reefact.FluentRequestBinder.Net70.UnitTests\Reefact.FluentRequestBinder.Net70.UnitTests.csproj", "{19A4A090-B65E-4A32-AD29-3FB724564E01}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Reefact.FluentRequestBinder.UnitTests", "Reefact.FluentRequestBinder.UnitTests\Reefact.FluentRequestBinder.UnitTests.shproj", "{80EA39B2-E23A-466C-B5EC-131B45AED4C1}"
 EndProject
