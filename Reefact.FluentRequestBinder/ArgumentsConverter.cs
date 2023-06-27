@@ -10,14 +10,16 @@ using Reefact.FluentRequestBinder.Configuration;
 
 namespace Reefact.FluentRequestBinder {
 
+    /// <summary>
+    ///     Converts simple arguments.
+    /// </summary>
     [DebuggerDisplay("{ToString()}")]
     public sealed class ArgumentsConverter : Validator {
 
         #region Fields declarations
 
-        private readonly ValidationOptions     _validationOptions;
-        private readonly string                _argPrefix;
-        private readonly List<ValidationError> _errors = new List<ValidationError>();
+        private readonly string?               _argPrefix;
+        private readonly List<ValidationError> _errors = new();
 
         #endregion
 
@@ -26,119 +28,156 @@ namespace Reefact.FluentRequestBinder {
         internal ArgumentsConverter(ValidationOptions validationOptions) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            _validationOptions = validationOptions;
-            _argPrefix         = null;
+            Options    = validationOptions;
+            _argPrefix = null;
         }
 
         internal ArgumentsConverter(ValidationOptions validationOptions, string prefix) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            _validationOptions = validationOptions;
-            _argPrefix         = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
+            Options    = validationOptions;
+            _argPrefix = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
         }
 
         #endregion
 
-        public bool HasError   => _errors.Count > 0;
-        public int  ErrorCount => _errors.Count;
+        /// <inheritdoc />
+        public bool HasError => _errors.Count > 0;
 
-        internal ValidationOptions Options => _validationOptions;
+        /// <inheritdoc />
+        public int ErrorCount => _errors.Count;
 
-        public RequiredArgument<TOutput> ConvertRequired<TInput, TOutput>(string argName, TInput argValue, Func<TInput, TOutput> convertArgValue) {
-            if (argName         == null) { throw new ArgumentNullException(nameof(argName)); }
-            if (convertArgValue == null) { throw new ArgumentNullException(nameof(convertArgValue)); }
+        internal ValidationOptions Options { get; }
 
-            string argFullName = GetArgFullName(argName);
+        /// <summary> Converts a required argument to a property. </summary>
+        /// <typeparam name="TArgument">The type of the argument.</typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="argumentName">The name of the argument.</param>
+        /// <param name="argumentValue">The value of the argument.</param>
+        /// <param name="convert">The argument value to property value conversion method.</param>
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required property</see> conversion result.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Parameters <paramref name="argumentName" /> and <paramref name="convert" />
+        ///     cannot be null.
+        /// </exception>
+        public RequiredProperty<TProperty> ConvertRequired<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
+            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (argValue == null) {
-                var error = new ValidationError(argFullName, "Argument is required.");
+            string argumentFullName = GetArgFullName(argumentName);
+
+            if (argumentValue == null) {
+                ValidationError error = new(argumentFullName, "Argument is required.");
                 _errors.Add(error);
 
-                return RequiredArgument.CreateInvalid<TOutput>(argFullName, null);
+                return RequiredProperty<TProperty>.CreateMissing(argumentFullName);
             }
 
             try {
-                TOutput                   convertedArgValue = convertArgValue(argValue);
-                RequiredArgument<TOutput> convertRequired   = RequiredArgument.CreateValid(argFullName, argValue, convertedArgValue);
+                TProperty                   propertyValue    = convert(argumentValue);
+                RequiredProperty<TProperty> requiredProperty = RequiredProperty<TProperty>.CreateValid(argumentFullName, argumentValue, propertyValue);
 
-                return convertRequired;
+                return requiredProperty;
             } catch (BadRequestException ex) {
                 _errors.AddRange(ex.ValidationErrors);
 
-                RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argFullName, argValue);
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argumentFullName, argumentValue);
 
                 return convertRequired;
             } catch (ApplicationException ex) {
-                if (!_validationOptions.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
 
-                var error = new ValidationError(argFullName, ex.Message);
+                ValidationError error = new(argumentFullName, ex.Message);
                 _errors.Add(error);
-                RequiredArgument<TOutput> convertRequired = RequiredArgument.CreateInvalid<TOutput>(argName, argValue);
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argumentName, argumentValue);
 
                 return convertRequired;
             }
         }
 
-        public OptionalArgument<TOutput> ConvertOptional<TInput, TOutput>(string argName, TInput argValue, Func<TInput, TOutput> convertArgValue) {
-            if (argName         == null) { throw new ArgumentNullException(nameof(argName)); }
-            if (convertArgValue == null) { throw new ArgumentNullException(nameof(convertArgValue)); }
+        /// <summary> Converts an optional argument to a property. </summary>
+        /// <typeparam name="TArgument">The type of the argument.</typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="argumentName">The name of the argument.</param>
+        /// <param name="argumentValue">The value of the argument.</param>
+        /// <param name="convert">The argument value to property value conversion method.</param>
+        /// <returns>The <see cref="OptionalProperty{TPropperty}">optional property</see> conversion result.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Parameters <paramref name="argumentName" /> and <paramref name="convert" />
+        ///     cannot be null.
+        /// </exception>
+        public OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
+            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
 
-            string argFullName = GetArgFullName(argName);
+            string argFullName = GetArgFullName(argumentName);
+
+            if (argumentValue == null) { return OptionalProperty<TProperty>.CreateMissing(argumentName); }
 
             try {
-                TOutput                   convertedArgValue = convertArgValue(argValue);
-                OptionalArgument<TOutput> convertRequired   = OptionalArgument.CreateValid(argFullName, argValue, convertedArgValue);
+                TProperty                   propertyValue   = convert(argumentValue);
+                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateValid(argFullName, argumentValue, propertyValue);
 
                 return convertRequired;
             } catch (ApplicationException ex) {
-                if (!_validationOptions.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
 
-                var error = new ValidationError(argFullName, ex.Message);
+                ValidationError error = new(argFullName, ex.Message);
                 _errors.Add(error);
-                OptionalArgument<TOutput> convertRequired = OptionalArgument.CreateInvalid<TOutput>(argFullName, argValue);
+                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateInvalid(argFullName, argumentValue);
 
                 return convertRequired;
             }
         }
 
-        public RequiredArgument<TValue> IsRequired<TValue>(string argName, TValue argValue) {
-            if (argName == null) { throw new ArgumentNullException(nameof(argName)); }
+        /// <summary>
+        ///     Binds a argument to a required complex property using a custom conversion method.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the output property.</typeparam>
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversions result.</returns>
+        public RequiredProperty<TProperty> IsRequired<TProperty>(string argumentName, TProperty argumentValue) {
+            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 
-            string argFullName = GetArgFullName(argName);
+            string argFullName = GetArgFullName(argumentName);
 
-            if (argValue != null) { return RequiredArgument.CreateValid(argFullName, argValue, argValue); }
+            if (argumentValue != null) { return RequiredProperty<TProperty>.CreateValid(argFullName, argumentValue, argumentValue); }
 
-            var error = new ValidationError(argFullName, "Argument is required.");
+            ValidationError error = new(argFullName, "Argument is required.");
             _errors.Add(error);
 
-            return RequiredArgument.CreateInvalid<TValue>(argFullName, argValue);
+            return RequiredProperty<TProperty>.CreateMissing(argFullName);
         }
 
-        public void AddError(ValidationError error) {
-            if (error == null) { throw new ArgumentNullException(nameof(error)); }
+        /// <inheritdoc />
+        public void RecordError(ValidationError error) {
+            if (error is null) { throw new ArgumentNullException(nameof(error)); }
 
             _errors.Add(error);
         }
 
-        public void AddErrors(IEnumerable<ValidationError> errors) {
+        /// <inheritdoc />
+        public void RecordErrors(IEnumerable<ValidationError> errors) {
             if (errors == null) { throw new ArgumentNullException(nameof(errors)); }
 
             _errors.AddRange(errors);
         }
 
+        /// <inheritdoc />
         public void AssertHasNoError() {
             if (HasError) { throw BadRequestException.From(this); }
         }
 
+        /// <inheritdoc />
         public ValidationError[] GetErrors() {
             return _errors.ToArray();
         }
 
+        /// <inheritdoc />
         public override string ToString() {
-            if (_errors.Count == 0) { return "No error detected."; }
-            if (_errors.Count == 1) { return "1 error has been detected."; }
+            if (_errors.Count == 0) { return "No error recorded."; }
+            if (_errors.Count == 1) { return "1 error has been recorded."; }
 
-            return $"{_errors.Count} errors have been detected.";
+            return $"{_errors.Count} errors have been recorded.";
         }
 
         private string GetArgFullName(string argName) {

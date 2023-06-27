@@ -1,22 +1,32 @@
 ﻿#region Usings declarations
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 #endregion
 
 namespace Reefact.FluentRequestBinder.Configuration {
 
+    /// <summary>
+    ///     Enables the construction of valid validation options.
+    /// </summary>
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public sealed class ValidationOptionsBuilder {
 
         #region Fields declarations
 
-        private PropertyNameProvider _propertyNameProvider;
+        private ArgumentNameProvider _propertyNameProvider;
         private Type                 _handledExceptionType;
 
         #endregion
 
         #region Constructors declarations
 
+        /// <summary>
+        ///     Instantiate a new <see cref="ValidationOptionsBuilder">validation options builder</see>.
+        /// </summary>
         public ValidationOptionsBuilder() {
             _handledExceptionType = ValidationOptions.Default.HandledExceptionType;
             _propertyNameProvider = ValidationOptions.Default.PropertyNameProvider;
@@ -24,7 +34,10 @@ namespace Reefact.FluentRequestBinder.Configuration {
 
         #endregion
 
-        public PropertyNameProvider PropertyNameProvider {
+        /// <summary>
+        ///     The <see cref="PropertyNameProvider">property name provider</see> to use during validation.
+        /// </summary>
+        public ArgumentNameProvider PropertyNameProvider {
             get => _propertyNameProvider;
             set {
                 if (value == null) { throw new ArgumentNullException(nameof(value)); }
@@ -33,10 +46,13 @@ namespace Reefact.FluentRequestBinder.Configuration {
             }
         }
 
+        /// <summary>
+        ///     The type of domain exceptions matching a bad request argument to handle.
+        /// </summary>
         public Type HandledExceptionType {
             get => _handledExceptionType;
             set {
-                if (value == null) { throw new ArgumentNullException("value"); }
+                if (value == null) { throw new ArgumentNullException(nameof(value)); }
 
                 _handledExceptionType = value;
             }

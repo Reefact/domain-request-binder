@@ -18,12 +18,13 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         #region Statics members declarations
 
         private static PromoteMember_v1 CreatePromoteMemberCommandWithTemperatureUnitError() {
-            var request = new PromoteMember_v1 {
+            PromoteMember_v1 request = new() {
                 TeamId       = Guid.NewGuid(),
                 MemberUtCode = "UT3245",
                 Temperature = new Temperature_v1 {
                     Value = "37",
-                    Unit  = "cecius"
+                    // ReSharper disable once StringLiteralTypo
+                    Unit = "cecius"
                 }
             };
 
@@ -31,12 +32,12 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         private static PromoteMember_v1 CreateValidPromoteMemberCommand() {
-            var request = new PromoteMember_v1 {
+            PromoteMember_v1 request = new() {
                 TeamId       = Guid.NewGuid(),
                 MemberUtCode = "UT3245",
                 Temperature = new Temperature_v1 {
                     Value = "37",
-                    Unit  = "celcius"
+                    Unit = "celsius"
                 }
             };
 
@@ -44,11 +45,11 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         private static PromoteMember_v1 CreatePromoteMemberCommandWithNullMember() {
-            var request = new PromoteMember_v1 {
+            PromoteMember_v1 request = new() {
                 TeamId = Guid.NewGuid(),
                 Temperature = new Temperature_v1 {
                     Value = "37",
-                    Unit  = "celcius"
+                    Unit = "celsius"
                 }
             };
 
@@ -61,15 +62,15 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void test() {
             // Setup
             PromoteMember_v1                   requestWithError = CreatePromoteMemberCommandWithTemperatureUnitError();
-            RequestConverter<PromoteMember_v1> bind          = Bind.PropertiesOf(requestWithError);
+            RequestConverter<PromoteMember_v1> bind             = Bind.PropertiesOf(requestWithError);
             // Exercise
-            RequiredArgument<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
-            RequiredArgument<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode).AsRequired();
-            RequiredArgument<Temperature> temperature = bind.ComplexProperty(c => c.Temperature).AsRequired(TemperatureConverter.Convert);
+            bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
+            bind.SimpleProperty(c => c.MemberUtCode).AsRequired();
+            bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
             // Verify
             Check.That(bind.ErrorCount).IsEqualTo(1);
             ValidationError error = bind.GetErrors().First();
-            Check.That(error.FieldName).IsEqualTo("Temperature.Unit");
+            Check.That(error.ArgumentName).IsEqualTo("Temperature.Unit");
             Check.That(error.ErrorMessage).IsEqualTo("Unknown temperature unit.");
         }
 
@@ -77,15 +78,16 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void test2() {
             // Setup
             PromoteMember_v1                   requestWithError = CreateValidPromoteMemberCommand();
-            RequestConverter<PromoteMember_v1> bind          = Bind.PropertiesOf(requestWithError);
+            RequestConverter<PromoteMember_v1> bind             = Bind.PropertiesOf(requestWithError);
             // Exercise
-            RequiredArgument<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
-            RequiredArgument<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode).AsRequired();
-            RequiredArgument<Temperature> temperature = bind.ComplexProperty(c => c.Temperature).AsRequired(TemperatureConverter.Convert);
+            RequiredProperty<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
+            RequiredProperty<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
+            RequiredProperty<Temperature> temperature = bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
             // Verify
             Check.That(bind.HasError).IsFalse();
             Check.ThatCode(() => {
-                var command = new PromoteMember(teamId, utCode, temperature);
+                // ReSharper disable once ObjectCreationAsStatement
+                new PromoteMember(teamId, utCode, temperature);
             }).DoesNotThrow();
         }
 
@@ -93,22 +95,18 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void test3() {
             // Setup
             PromoteMember_v1                   requestWithError = CreatePromoteMemberCommandWithNullMember();
-            RequestConverter<PromoteMember_v1> bind          = Bind.PropertiesOf(requestWithError);
+            RequestConverter<PromoteMember_v1> bind             = Bind.PropertiesOf(requestWithError);
             // Exercise
-            RequiredArgument<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
-            RequiredArgument<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
-            RequiredArgument<Temperature> temperature = bind.ComplexProperty(c => c.Temperature).AsRequired(TemperatureConverter.Convert);
+            bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
+            RequiredProperty<string> utCode = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
+            bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
             // Verify
             Check.That(bind.ErrorCount).IsEqualTo(1);
             Check.That(utCode.IsValid).IsFalse();
             ValidationError utCodeError = bind.GetErrors().First();
-            Check.That(utCodeError.FieldName).IsEqualTo("MemberUtCode");
+            Check.That(utCodeError.ArgumentName).IsEqualTo("MemberUtCode");
             Check.That(utCodeError.ErrorMessage).IsEqualTo("Argument is required.");
         }
-
-        #region Nested types declarations
-
-        #endregion
 
     }
 

@@ -10,8 +10,8 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         public Guid TeamId { get; set; }
 
-        public string         MemberUtCode { get; set; }
-        public Temperature_v1 Temperature  { get; set; }
+        public string?         MemberUtCode { get; set; }
+        public Temperature_v1? Temperature  { get; set; }
 
     }
 

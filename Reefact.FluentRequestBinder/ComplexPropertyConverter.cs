@@ -1,43 +1,80 @@
 ﻿#region Usings declarations
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 #endregion
 
 namespace Reefact.FluentRequestBinder {
 
-    public sealed class ComplexPropertyConverter<TInput> {
+    /// <summary>Handle the conversion of an argument to a complex property.</summary>
+    /// <typeparam name="TArgument">The type of the input argument.</typeparam>
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public sealed class ComplexPropertyConverter<TArgument> {
 
         #region Fields declarations
 
         private readonly ArgumentsConverter _argumentsValidator;
-        private readonly TInput             _argValue;
-        private readonly string             _argName;
+        private readonly TArgument?         _argumentValue;
+        private readonly string             _argumentName;
 
         #endregion
 
         #region Constructors declarations
 
-        public ComplexPropertyConverter(ArgumentsConverter argumentsValidator, string argName, TInput argValue) {
+        internal ComplexPropertyConverter(ArgumentsConverter argumentsValidator, string argumentName, TArgument? argumentValue) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
-            if (argName is null) { throw new ArgumentNullException(nameof(argName)); }
+            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
             _argumentsValidator = argumentsValidator;
-            _argName            = argName;
-            _argValue           = argValue;
+            _argumentName       = argumentName;
+            _argumentValue      = argumentValue;
         }
 
         #endregion
 
-        public RequiredArgument<TOutput> AsRequired<TOutput>(Func<RequestConverter<TInput>, TOutput> convert) {
+        /// <summary>
+        ///     Converts an argument to a required complex property using a custom conversion method.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the output property.</typeparam>
+        /// <param name="convert">The custom conversion method.</param>
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversion result.</returns>
+        public RequiredProperty<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
+            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
+
+            if (_argumentValue is null) { return RequiredProperty<TProperty>.CreateMissing(_argumentName); }
+
             try {
-                TOutput output = convert(new RequestConverter<TInput>(_argValue, _argumentsValidator.Options, _argName));
+                RequestConverter<TArgument> requestConverter = new(_argumentValue, _argumentsValidator.Options, _argumentName);
+                TProperty                   propertyValue    = convert(requestConverter);
 
-                return RequiredArgument.CreateValid(_argName, _argValue, output);
+                return RequiredProperty<TProperty>.CreateValid(_argumentName, _argumentValue, propertyValue);
             } catch (BadRequestException ex) {
-                _argumentsValidator.AddErrors(ex.ValidationErrors);
+                _argumentsValidator.RecordErrors(ex.ValidationErrors);
 
-                return RequiredArgument.CreateInvalid<TOutput>(_argName, _argValue);
+                return RequiredProperty<TProperty>.CreateInvalid(_argumentName, _argumentValue);
+            }
+        }
+
+        /// <summary>
+        ///     Converts an argument to an optional complex property using a custom conversion method.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the output property.</typeparam>
+        /// <param name="convert">The custom conversion method.</param>
+        /// <returns>The <see cref="OptionalProperty{TArgument}">required argument</see> conversion result.</returns>
+        public OptionalProperty<TProperty> AsOptional<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
+            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
+
+            if (_argumentValue == null) { return OptionalProperty<TProperty>.CreateMissing(_argumentName); }
+
+            try {
+                TProperty propertyValue = convert(new RequestConverter<TArgument>(_argumentValue, _argumentsValidator.Options, _argumentName));
+
+                return OptionalProperty<TProperty>.CreateValid(_argumentName, _argumentValue, propertyValue);
+            } catch (BadRequestException ex) {
+                _argumentsValidator.RecordErrors(ex.ValidationErrors);
+
+                return OptionalProperty<TProperty>.CreateInvalid(_argumentName, _argumentValue);
             }
         }
 

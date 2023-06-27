@@ -12,8 +12,8 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         public static TemperatureUnit Convert(string input) {
             return input switch {
-                "celcius"   => TemperatureUnit.Celcius,
-                "farenheit" => TemperatureUnit.Farenheit,
+                "celsius"   => TemperatureUnit.Celcius,
+                "fahrenheit" => TemperatureUnit.Farenheit,
                 _           => throw new ApplicationException("Unknown temperature unit.")
             };
         }

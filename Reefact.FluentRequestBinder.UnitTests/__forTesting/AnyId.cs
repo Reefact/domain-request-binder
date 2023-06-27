@@ -24,11 +24,11 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         #endregion
 
-        public static bool operator ==(AnyId left, AnyId right) {
+        public static bool operator ==(AnyId? left, AnyId? right) {
             return Equals(left, right);
         }
 
-        public static bool operator !=(AnyId left, AnyId right) {
+        public static bool operator !=(AnyId? left, AnyId? right) {
             return !Equals(left, right);
         }
 
@@ -47,7 +47,7 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
         #endregion
 
         /// <inheritdoc />
-        public bool Equals(AnyId other) {
+        public bool Equals(AnyId? other) {
             if (ReferenceEquals(null, other)) { return false; }
             if (ReferenceEquals(this, other)) { return true; }
 
@@ -55,7 +55,7 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return ReferenceEquals(this, obj) || (obj is AnyId other && Equals(other));
         }
 

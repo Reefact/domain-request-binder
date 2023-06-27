@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -12,16 +13,21 @@ using Reefact.FluentRequestBinder.Configuration;
 
 namespace Reefact.FluentRequestBinder {
 
+    /// <summary>
+    ///     Converts requests.
+    /// </summary>
+    /// <typeparam name="TRequest"></typeparam>
     [DebuggerDisplay("{ToString()}")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public sealed class RequestConverter<TRequest> : Validator {
 
         #region Statics members declarations
 
         private static PropertyInfo GetPropertyInfo<TObject, TProperty>(Expression<Func<TObject, TProperty>> expression) {
-            var body = expression.Body as MemberExpression;
+            MemberExpression? body = expression.Body as MemberExpression;
             if (body == null) { throw new InvalidOperationException("Expression body is not of MemberExpression type."); }
 
-            var member = body.Member as PropertyInfo;
+            PropertyInfo? member = body.Member as PropertyInfo;
             if (member == null) { throw new InvalidOperationException("MemberExpression is not of PropertyInfo type."); }
 
             return member;
@@ -56,7 +62,7 @@ namespace Reefact.FluentRequestBinder {
             _validationOptions  = validationOptions;
             _argumentsValidator = new ArgumentsConverter(validationOptions, argNamePrefix);
         }
-
+        
         #endregion
 
         /// <inheritdoc />
@@ -64,30 +70,42 @@ namespace Reefact.FluentRequestBinder {
         /// <inheritdoc />
         public int ErrorCount => _argumentsValidator.ErrorCount;
 
-        public SimplePropertyConverter<TInput> SimpleProperty<TInput>(Expression<Func<TRequest, TInput>> expression) {
+        /// <summary>
+        ///     Converts a field to a simple property.
+        /// </summary>
+        /// <param name="expression">The field selector.</param>
+        /// <typeparam name="TArgument">The type of the field.</typeparam>
+        /// <returns>An instance of <see cref="SimplePropertyConverter{TArgument}" />.</returns>
+        public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
             PropertyInfo propertyInfo = GetPropertyInfo(expression);
-            string       argName      = _validationOptions.PropertyNameProvider.GetName(propertyInfo);
-            var          argValue     = (TInput)propertyInfo.GetValue(_request);
+            string       argName      = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            TArgument?   argValue     = (TArgument?)propertyInfo.GetValue(_request);
 
-            return new SimplePropertyConverter<TInput>(_argumentsValidator, argName, argValue);
+            return new SimplePropertyConverter<TArgument>(_argumentsValidator, argName, argValue);
         }
 
-        public ComplexPropertyConverter<TInput> ComplexProperty<TInput>(Expression<Func<TRequest, TInput>> expression) {
-            PropertyInfo propertyInfo = GetPropertyInfo(expression);
-            string       argName      = _validationOptions.PropertyNameProvider.GetName(propertyInfo);
-            var          argValue     = (TInput)propertyInfo.GetValue(_request);
+        /// <summary>
+        ///     Convert a field to a complex property.
+        /// </summary>
+        /// <param name="expression">The field selector.</param>
+        /// <typeparam name="TArgument">The type of the field.</typeparam>
+        /// <returns>An instance of <see cref="ComplexPropertyConverter{TArgument}" />.</returns>
+        public ComplexPropertyConverter<TArgument> ComplexProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
+            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
+            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            TArgument?   argumentValue = (TArgument?)propertyInfo.GetValue(_request);
 
-            return new ComplexPropertyConverter<TInput>(_argumentsValidator, argName, argValue);
+            return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
         }
 
         /// <inheritdoc />
-        public void AddError(ValidationError error) {
-            _argumentsValidator.AddError(error);
+        public void RecordError(ValidationError error) {
+            _argumentsValidator.RecordError(error);
         }
 
         /// <inheritdoc />
-        public void AddErrors(IEnumerable<ValidationError> errors) {
-            _argumentsValidator.AddErrors(errors);
+        public void RecordErrors(IEnumerable<ValidationError> errors) {
+            _argumentsValidator.RecordErrors(errors);
         }
 
         /// <inheritdoc />

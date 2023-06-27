@@ -11,16 +11,16 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultRequestBinder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PropertyNameProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ArgumentNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArgumentsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BadRequestException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ComplexPropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptionsBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultPropertyNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OptionalArgument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionalProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestBinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RequiredArgument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequiredProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimplePropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValidationError.cs" />
