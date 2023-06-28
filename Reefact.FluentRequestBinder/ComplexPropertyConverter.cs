@@ -27,7 +27,7 @@ namespace Reefact.FluentRequestBinder {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
             _argumentsValidator = argumentsValidator;
-            _argumentName       = argumentName;
+            _argumentName       = GetArgFullName(argumentName);
             _argumentValue      = argumentValue;
         }
 
@@ -42,7 +42,11 @@ namespace Reefact.FluentRequestBinder {
         public RequiredProperty<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValue is null) { return RequiredProperty<TProperty>.CreateMissing(_argumentName); }
+            if (_argumentValue is null) {
+                _argumentsValidator.RecordError(new ValidationError(_argumentName, "Argument is required."));
+
+                return RequiredProperty<TProperty>.CreateMissing(_argumentName);
+            }
 
             try {
                 RequestConverter<TArgument> requestConverter = new(_argumentValue, _argumentsValidator.Options, _argumentName);
@@ -68,7 +72,8 @@ namespace Reefact.FluentRequestBinder {
             if (_argumentValue == null) { return OptionalProperty<TProperty>.CreateMissing(_argumentName); }
 
             try {
-                TProperty propertyValue = convert(new RequestConverter<TArgument>(_argumentValue, _argumentsValidator.Options, _argumentName));
+                RequestConverter<TArgument> requestConverter = new(_argumentValue, _argumentsValidator.Options, _argumentName);
+                TProperty                   propertyValue    = convert(requestConverter);
 
                 return OptionalProperty<TProperty>.CreateValid(_argumentName, _argumentValue, propertyValue);
             } catch (BadRequestException ex) {
@@ -78,6 +83,12 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
+        private string GetArgFullName(string argName)
+        {
+            if (_argumentsValidator.ArgumentPrefix == null) { return argName; }
+
+            return $"{_argumentsValidator.ArgumentPrefix}.{argName}";
+        }
     }
 
 }

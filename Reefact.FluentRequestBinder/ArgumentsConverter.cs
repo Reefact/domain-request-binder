@@ -18,7 +18,6 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly string?               _argPrefix;
         private readonly List<ValidationError> _errors = new();
 
         #endregion
@@ -28,15 +27,15 @@ namespace Reefact.FluentRequestBinder {
         internal ArgumentsConverter(ValidationOptions validationOptions) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            Options    = validationOptions;
-            _argPrefix = null;
+            Options        = validationOptions;
+            ArgumentPrefix = null;
         }
 
         internal ArgumentsConverter(ValidationOptions validationOptions, string prefix) {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            Options    = validationOptions;
-            _argPrefix = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
+            Options        = validationOptions;
+            ArgumentPrefix = string.IsNullOrWhiteSpace(prefix) ? null : prefix.Trim();
         }
 
         #endregion
@@ -47,7 +46,8 @@ namespace Reefact.FluentRequestBinder {
         /// <inheritdoc />
         public int ErrorCount => _errors.Count;
 
-        internal ValidationOptions Options { get; }
+        internal ValidationOptions Options        { get; }
+        internal string?           ArgumentPrefix { get; }
 
         /// <summary> Converts a required argument to a property. </summary>
         /// <typeparam name="TArgument">The type of the argument.</typeparam>
@@ -181,9 +181,9 @@ namespace Reefact.FluentRequestBinder {
         }
 
         private string GetArgFullName(string argName) {
-            if (_argPrefix == null) { return argName; }
+            if (ArgumentPrefix == null) { return argName; }
 
-            return $"{_argPrefix}.{argName}";
+            return $"{ArgumentPrefix}.{argName}";
         }
 
     }
