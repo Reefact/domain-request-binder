@@ -4,6 +4,12 @@ using System.Linq;
 using NFluent;
 
 using Xunit;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable PropertyCanBeMadeInitOnly.Local
+// ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable ClassNeverInstantiated.Local
 
 namespace Reefact.FluentRequestBinder.UnitTests {
 
@@ -13,7 +19,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void handle_correctly_when_a_complex_required_property_is_null() {
             Request_v1                   requestWithoutUser = new();
             RequestConverter<Request_v1> bind               = Bind.PropertiesOf(requestWithoutUser);
-            RequiredProperty<User>       user               = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser);
+            RequiredProperty<User>       user               = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser!);
             Check.That(user.IsValid).IsFalse();
             Check.That(bind.HasError).IsTrue();
             Check.That(bind.ErrorCount).IsEqualTo(1);
@@ -30,7 +36,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
                 }
             };
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithoutUserName);
-            RequiredProperty<User>       user = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser);
+            RequiredProperty<User>       user = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser!);
             Check.That(user.IsValid).IsFalse();
             Check.That(bind.HasError).IsTrue();
             Check.That(bind.ErrorCount).IsEqualTo(1);
@@ -41,7 +47,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
 
         private User ConvertUser(RequestConverter<User_v1> bind) {
             RequiredProperty<Guid>     id       = bind.SimpleProperty(u => u.Id).AsRequired();
-            RequiredProperty<UserName> userName = bind.ComplexProperty(u => u.UserName).AsRequired(ConvertUserName);
+            RequiredProperty<UserName> userName = bind.ComplexProperty(u => u.UserName).AsRequired(ConvertUserName!);
             bind.AssertHasNoError();
 
             return new User(id, userName);
@@ -59,6 +65,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
 
         private class Request_v1 {
 
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public User_v1? User { get; set; }
 
         }
@@ -66,6 +73,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         private class User_v1 {
 
             public Guid         Id       { get; set; }
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public UserName_v1? UserName { get; set; }
 
         }
