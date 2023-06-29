@@ -58,18 +58,18 @@ namespace Reefact.FluentRequestBinder {
         public static implicit operator List<TProperty>(RequiredList<TProperty> requiredProperty) {
             if (requiredProperty == null) { throw new ArgumentNullException(nameof(requiredProperty)); }
 
-            return requiredProperty.Value!.ToList();
+            return requiredProperty.Value.ToList();
         }
 
         #region Fields declarations
 
-        private readonly IEnumerable<TProperty>? _value;
+        private readonly IEnumerable<TProperty> _value;
 
         #endregion
 
         #region Constructors declarations
 
-        private RequiredList(string argumentName, object? argumentValue, IEnumerable<TProperty>? propertyValue, bool isValid) {
+        private RequiredList(string argumentName, object? argumentValue, IEnumerable<TProperty> propertyValue, bool isValid) {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
             ArgumentName  = argumentName;
@@ -97,7 +97,7 @@ namespace Reefact.FluentRequestBinder {
             get {
                 if (!IsValid) { throw new InvalidOperationException("Property is not valid."); }
 
-                return _value!;
+                return _value;
             }
         }
 
@@ -111,7 +111,7 @@ namespace Reefact.FluentRequestBinder {
 
         /// <inheritdoc />
         public override string ToString() {
-            return (IsValid ? _value?.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
+            return (IsValid ? _value.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
         }
 
     }
