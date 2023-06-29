@@ -77,11 +77,11 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="SimplePropertyConverter{TArgument}" />.</returns>
         public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            PropertyInfo propertyInfo = GetPropertyInfo(expression);
-            string       argName      = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            TArgument?   argValue     = (TArgument?)propertyInfo.GetValue(_request);
+            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
+            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            TArgument?   argumentValue = (TArgument?)propertyInfo.GetValue(_request);
 
-            return new SimplePropertyConverter<TArgument>(_argumentsValidator, argName, argValue);
+            return new SimplePropertyConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
         }
 
         /// <summary>
