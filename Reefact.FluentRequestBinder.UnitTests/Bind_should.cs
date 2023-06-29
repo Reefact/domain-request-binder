@@ -224,7 +224,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+            RequiredList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
 
             // Verify
             // - property
@@ -243,7 +243,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind                    = Bind.PropertiesOf(requestWithMissingRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+            RequiredList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
 
             // Verify
             // - required property
@@ -275,7 +275,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+            RequiredList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
 
             // Verify
             // - required property
@@ -303,7 +303,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+            OptionalList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
 
             // Verify
             // - property
@@ -323,7 +323,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind            = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+            OptionalList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
 
             // Verify
             // - property
@@ -350,7 +350,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+            OptionalList<AnyId> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
 
             // Verify
             // - required property
