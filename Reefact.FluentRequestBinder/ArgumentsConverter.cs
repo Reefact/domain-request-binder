@@ -1,10 +1,21 @@
-﻿using System;
+﻿#region Using declarations
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 using Reefact.FluentRequestBinder.Configuration;
 
+#endregion
+
 namespace Reefact.FluentRequestBinder {
 
+    /// <summary>
+    ///     Converts simple arguments.
+    /// </summary>
+    [DebuggerDisplay("{ToString()}")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public sealed class ArgumentsConverter : Validator {
 
         #region Fields declarations
@@ -19,12 +30,6 @@ namespace Reefact.FluentRequestBinder {
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
             _argumentsValidator = new Converter(validationOptions);
-        }
-
-        internal ArgumentsConverter(ValidationOptions validationOptions, string argNamePrefix) {
-            if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
-
-            _argumentsValidator = new Converter(validationOptions, argNamePrefix);
         }
 
         #endregion

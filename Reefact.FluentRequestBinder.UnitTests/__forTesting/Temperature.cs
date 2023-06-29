@@ -1,10 +1,22 @@
-﻿using System;
+﻿#region Using declarations
+
+using System;
 using System.Diagnostics;
+
+#endregion
 
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
     [DebuggerDisplay("{ToString()}")]
-    public sealed class Temperature : IEquatable<Temperature> {
+    internal sealed class Temperature : IEquatable<Temperature> {
+
+        public static bool operator ==(Temperature? left, Temperature? right) {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Temperature? left, Temperature? right) {
+            return !Equals(left, right);
+        }
 
         #region Constructors declarations
 
@@ -33,7 +45,7 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         /// <inheritdoc />
         public override bool Equals(object? obj) {
-            return ReferenceEquals(this, obj) || obj is Temperature other && Equals(other);
+            return ReferenceEquals(this, obj) || (obj is Temperature other && Equals(other));
         }
 
         /// <inheritdoc />
@@ -41,17 +53,10 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
             return HashCode.Combine(Value, (int)Unit);
         }
 
-        public static bool operator ==(Temperature? left, Temperature? right) {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Temperature? left, Temperature? right) {
-            return !Equals(left, right);
-        }
-
         /// <inheritdoc />
         public override string ToString() {
             string unit = Unit == TemperatureUnit.Celsius ? "C" : "F";
+
             return $"{Value} °{unit}";
         }
 

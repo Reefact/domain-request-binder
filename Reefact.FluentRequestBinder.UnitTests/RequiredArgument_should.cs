@@ -44,7 +44,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Setup
             var requiredArgument = RequiredProperty<string>.CreateValid("argh", 33, "trente-trois");
             // Exercise
-            var output = requiredArgument.ToString();
+            string output = requiredArgument.ToString();
             // Verify
             Check.That(output).IsEqualTo("trente-trois");
         }
@@ -54,7 +54,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Setup
             var requiredArgument = RequiredProperty<int>.CreateInvalid("argh", 33);
             // Exercise
-            var output = requiredArgument.ToString();
+            string output = requiredArgument.ToString();
             // Verify
             Check.That(output).IsEqualTo("33");
         }
@@ -101,7 +101,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Exercise & verify
             Check.ThatCode(() => {
                       // ReSharper disable once UnusedVariable
-                      var value = (string)requiredArgument;
+                      string value = requiredArgument;
                   })
                  .Throws<InvalidOperationException>().WithMessage("Property is not valid.");
         }

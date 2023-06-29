@@ -10,9 +10,6 @@ using Reefact.FluentRequestBinder.Configuration;
 
 namespace Reefact.FluentRequestBinder {
 
-    /// <summary>
-    ///     Converts simple arguments.
-    /// </summary>
     [DebuggerDisplay("{ToString()}")]
     internal sealed class Converter : Validator {
 
@@ -49,17 +46,6 @@ namespace Reefact.FluentRequestBinder {
         internal ValidationOptions Options        { get; }
         internal string?           ArgumentPrefix { get; }
 
-        /// <summary> Converts a required argument to a property. </summary>
-        /// <typeparam name="TArgument">The type of the argument.</typeparam>
-        /// <typeparam name="TProperty">The type of the property.</typeparam>
-        /// <param name="argumentName">The name of the argument.</param>
-        /// <param name="argumentValue">The value of the argument.</param>
-        /// <param name="convert">The argument value to property value conversion method.</param>
-        /// <returns>The <see cref="RequiredProperty{TProperty}">required property</see> conversion result.</returns>
-        /// <exception cref="ArgumentNullException">
-        ///     Parameters <paramref name="argumentName" /> and <paramref name="convert" />
-        ///     cannot be null.
-        /// </exception>
         public RequiredProperty<TProperty> ConvertRequired<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
             if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
@@ -95,17 +81,6 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
-        /// <summary> Converts an optional argument to a property. </summary>
-        /// <typeparam name="TArgument">The type of the argument.</typeparam>
-        /// <typeparam name="TProperty">The type of the property.</typeparam>
-        /// <param name="argumentName">The name of the argument.</param>
-        /// <param name="argumentValue">The value of the argument.</param>
-        /// <param name="convert">The argument value to property value conversion method.</param>
-        /// <returns>The <see cref="OptionalProperty{TPropperty}">optional property</see> conversion result.</returns>
-        /// <exception cref="ArgumentNullException">
-        ///     Parameters <paramref name="argumentName" /> and <paramref name="convert" />
-        ///     cannot be null.
-        /// </exception>
         public OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
             if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
@@ -130,11 +105,6 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
-        /// <summary>
-        ///     Binds a argument to a required complex property using a custom conversion method.
-        /// </summary>
-        /// <typeparam name="TProperty">The type of the output property.</typeparam>
-        /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversions result.</returns>
         public RequiredProperty<TProperty> IsRequired<TProperty>(string argumentName, TProperty argumentValue) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 

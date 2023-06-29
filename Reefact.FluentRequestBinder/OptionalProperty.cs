@@ -16,12 +16,6 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        internal static OptionalProperty<TProperty> CreateMissing(string argumentName, TProperty empty) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-
-            return new OptionalProperty<TProperty>(argumentName, null, empty, true, true);
-        }
-
         internal static OptionalProperty<TProperty> CreateMissing(string argumentName) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 

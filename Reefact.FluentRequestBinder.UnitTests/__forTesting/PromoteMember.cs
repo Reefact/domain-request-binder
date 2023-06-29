@@ -6,7 +6,7 @@ using System;
 
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
-    public sealed class PromoteMember {
+    internal sealed class PromoteMember {
 
         #region Constructors declarations
 

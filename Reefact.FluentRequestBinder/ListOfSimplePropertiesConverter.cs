@@ -1,10 +1,16 @@
-﻿using System;
+﻿#region Using declarations
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+#endregion
 
 namespace Reefact.FluentRequestBinder {
 
     /// <summary>Handle the conversion of an argument list to a property.</summary>
     /// <typeparam name="TArgument">The type of the input argument.</typeparam>
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public sealed class ListOfSimplePropertiesConverter<TArgument> {
 
         #region Fields declarations

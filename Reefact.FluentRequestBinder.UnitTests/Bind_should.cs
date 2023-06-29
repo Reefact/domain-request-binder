@@ -26,7 +26,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind               = Bind.PropertiesOf(requestWithoutUser);
 
             // Exercise
-            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser!);
+            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -51,7 +51,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithoutUserName);
 
             // Exercise
-            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(ConvertUser!);
+            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -76,7 +76,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(RoleConverter.Convert);
 
             // Verify
             // - list
@@ -95,7 +95,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithMissingRoles);
 
             // Exercise
-            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(RoleConverter.Convert);
 
             // Verify
             // - required property
@@ -125,7 +125,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(RoleConverter.Convert);
 
             // Verify
             // - required property
@@ -151,7 +151,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(RoleConverter.Convert);
 
             // Verify
             // - property
@@ -171,7 +171,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind            = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(RoleConverter.Convert);
 
             // Verify
             // - property
@@ -196,7 +196,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(RoleConverter.Convert);
 
             // Verify
             // - required property
@@ -366,31 +366,46 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void test() {
+        public void handle_correctly_required_simple_property() {
+            // Setup
             ArgumentsConverter bind = Bind.Arguments();
+
+            // Exercise
             RequiredProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
+
+            // Verify
             Check.That(@int.IsValid).IsTrue();
             Check.That(@int.Value).IsEqualTo(42);
         }
 
         [Fact]
-        public void test3() {
+        public void handle_correctly_list_of_simple_properties() {
+            // Setup
             ArgumentsConverter bind = Bind.Arguments();
-            RequiredList<int>     @int = bind.ListOfSimpleProperties("toto", new[] { "33", "42", "69" }).AsRequired(int.Parse);
+
+            // Exercise
+            RequiredList<int> @int = bind.ListOfSimpleProperties("toto", new[] { "33", "42", "69" }).AsRequired(int.Parse);
+
+            // Verify
             Check.That(@int.IsValid).IsTrue();
             Check.That(@int.Value).IsEquivalentTo(33, 42, 69);
         }
 
         [Fact]
-        public void test2() {
-            ArgumentsConverter         bind        = Bind.Arguments();
+        public void handle_correctly_complex_properties() {
+            // Setup
+            ArgumentsConverter bind = Bind.Arguments();
+
+            // Exercise
             RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
+
+            // Verify
             Check.That(temperature.IsValid).IsTrue();
             Check.That(temperature.Value).IsEqualTo(new Temperature(37, TemperatureUnit.Celsius));
         }
 
         [Fact]
-        public void test4() {
+        public void handle_correctly_invalid_complex_properties() {
             // Setup
             ArgumentsConverter bind = Bind.Arguments();
 
@@ -410,10 +425,10 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void test5() {
-            ArgumentsConverter bind          = Bind.Arguments();
-            List<Guid>                   parameter = new ()  { Guid.NewGuid(), Guid.NewGuid(), Guid.Empty };
-            RequiredList<AnyId>   ids           = bind.ListOfSimpleProperties("toto", parameter).AsRequired(AnyId.From);
+        public void handle_correctly_invalid_list_of_simple_properties() {
+            ArgumentsConverter  bind      = Bind.Arguments();
+            List<Guid>          parameter = new() { Guid.NewGuid(), Guid.NewGuid(), Guid.Empty };
+            RequiredList<AnyId> ids       = bind.ListOfSimpleProperties("toto", parameter).AsRequired(AnyId.From);
             // Verify
             // - property
             Check.That(ids.IsValid).IsFalse();
@@ -425,145 +440,6 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(validationError.ArgumentName).IsEqualTo("toto[2]");
             Check.That(validationError.ErrorMessage).IsEqualTo("GUID cannot be empty.");
         }
-
-        private Role ConvertRole(RequestConverter<Role_v1> bind) {
-            RequiredProperty<string> id   = bind.SimpleProperty(x => x.Id!).AsRequired();
-            RequiredProperty<string> name = bind.SimpleProperty(x => x.Name!).AsRequired();
-            bind.AssertHasNoError();
-
-            return new Role(id, name);
-        }
-
-        private User ConvertUser(RequestConverter<User_v1> bind) {
-            RequiredProperty<Guid>     id       = bind.SimpleProperty(u => u.Id).AsRequired();
-            RequiredProperty<UserName> userName = bind.ComplexProperty(u => u.UserName).AsRequired(ConvertUserName!);
-            bind.AssertHasNoError();
-
-            return new User(id, userName);
-        }
-
-        private UserName ConvertUserName(RequestConverter<UserName_v1> bind) {
-            RequiredProperty<string> firstName = bind.SimpleProperty(x => x.FirstName).AsRequired()!;
-            RequiredProperty<string> lastName  = bind.SimpleProperty(x => x.LastName).AsRequired()!;
-            bind.AssertHasNoError();
-
-            return new UserName(firstName, lastName);
-        }
-
-        #region Nested types declarations
-
-        private class Request_v1 {
-
-            // ReSharper disable once MemberHidesStaticFromOuterClass
-            public User_v1?       User      { get; set; }
-            public List<Role_v1>? Roles     { get; set; }
-            public List<Guid>?    FriendIds { get; set; }
-
-        }
-
-        private class Role_v1 {
-
-            public string? Id   { get; set; }
-            public string? Name { get; set; }
-
-        }
-
-        private class User_v1 {
-
-            public Guid Id { get; set; }
-            // ReSharper disable once MemberHidesStaticFromOuterClass
-            public UserName_v1? UserName { get; set; }
-
-        }
-
-        private class UserName_v1 {
-
-            public string? FirstName { get; set; }
-            public string? LastName  { get; set; }
-
-        }
-
-        public class UserName {
-
-            #region Constructors declarations
-
-            public UserName(string firstName, string lastName) {
-                if (firstName is null) { throw new ArgumentNullException(nameof(firstName)); }
-                if (lastName is null) { throw new ArgumentNullException(nameof(lastName)); }
-
-                FirstName = firstName;
-                LastName  = lastName;
-            }
-
-            #endregion
-
-            public string FirstName { get; }
-            public string LastName  { get; }
-
-        }
-
-        public sealed class Role : IEquatable<Role> {
-
-            public static bool operator ==(Role? left, Role? right) {
-                return Equals(left, right);
-            }
-
-            public static bool operator !=(Role? left, Role? right) {
-                return !Equals(left, right);
-            }
-
-            #region Constructors declarations
-
-            public Role(string id, string name) {
-                if (id is null) { throw new ArgumentNullException(nameof(id)); }
-                if (name is null) { throw new ArgumentNullException(nameof(name)); }
-
-                Id   = id;
-                Name = name;
-            }
-
-            #endregion
-
-            public string Id   { get; }
-            public string Name { get; }
-
-            /// <inheritdoc />
-            public bool Equals(Role? other) {
-                if (ReferenceEquals(null, other)) { return false; }
-                if (ReferenceEquals(this, other)) { return true; }
-
-                return Id == other.Id && Name == other.Name;
-            }
-
-            /// <inheritdoc />
-            public override bool Equals(object? obj) {
-                return ReferenceEquals(this, obj) || (obj is Role other && Equals(other));
-            }
-
-            /// <inheritdoc />
-            public override int GetHashCode() {
-                return HashCode.Combine(Id, Name);
-            }
-
-        }
-
-        private class User {
-
-            #region Constructors declarations
-
-            public User(Guid id, UserName userName) {
-                Id       = id;
-                UserName = userName;
-            }
-
-            #endregion
-
-            public Guid     Id       { get; }
-            public UserName UserName { get; }
-
-        }
-
-        #endregion
 
     }
 

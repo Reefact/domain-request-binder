@@ -1,6 +1,6 @@
 ﻿namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
-    public enum TemperatureUnit {
+    internal enum TemperatureUnit {
 
         Celsius,
 

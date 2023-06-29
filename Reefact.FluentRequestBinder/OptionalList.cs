@@ -14,6 +14,7 @@ namespace Reefact.FluentRequestBinder {
     /// </summary>
     /// <typeparam name="TProperty">The property type.</typeparam>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public sealed class OptionalList<TProperty> {
 
         #region Statics members declarations
@@ -54,7 +55,7 @@ namespace Reefact.FluentRequestBinder {
 
             if (optionalProperty.IsMissing) { return new List<TProperty>(); }
 
-            return optionalProperty.Value!.ToList();
+            return optionalProperty.Value.ToList();
         }
 
         #region Fields declarations
@@ -112,7 +113,7 @@ namespace Reefact.FluentRequestBinder {
 
         /// <inheritdoc />
         public override string ToString() {
-            return (IsValid ? _value?.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
+            return (IsValid ? _value.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
         }
 
     }

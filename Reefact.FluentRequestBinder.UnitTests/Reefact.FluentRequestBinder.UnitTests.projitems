@@ -10,7 +10,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Bind_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\RoleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\UserNameConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\UserConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Request_v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequiredArgument_should.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Role.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\Role_v1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\UserName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\UserName_v1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)__forTesting\User_v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)__forTesting\AnyId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArgumentsValidator_should.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)__forTesting\PromoteMember.cs" />

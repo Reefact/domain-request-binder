@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
     [DebuggerDisplay("{ToString()}")]
-    public sealed class AnyId : IEquatable<AnyId> {
+    internal sealed class AnyId : IEquatable<AnyId> {
 
         #region Statics members declarations
 
