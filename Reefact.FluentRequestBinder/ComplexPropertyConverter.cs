@@ -14,7 +14,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly ArgumentsConverter _argumentsValidator;
+        private readonly Converter _argumentsValidator;
         private readonly TArgument?         _argumentValue;
         private readonly string             _argumentName;
 
@@ -22,7 +22,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        internal ComplexPropertyConverter(ArgumentsConverter argumentsValidator, string argumentName, TArgument? argumentValue) {
+        internal ComplexPropertyConverter(Converter argumentsValidator, string argumentName, TArgument? argumentValue) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
@@ -86,6 +86,7 @@ namespace Reefact.FluentRequestBinder {
         private string GetArgFullName(string argName)
         {
             if (_argumentsValidator.ArgumentPrefix == null) { return argName; }
+            //if (argName                            == string.Empty) { return _argumentsValidator.ArgumentPrefix; }
 
             return $"{_argumentsValidator.ArgumentPrefix}.{argName}";
         }

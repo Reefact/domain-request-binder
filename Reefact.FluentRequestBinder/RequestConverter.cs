@@ -29,7 +29,7 @@ namespace Reefact.FluentRequestBinder {
 
             PropertyInfo? member = body.Member as PropertyInfo;
             if (member == null) { throw new InvalidOperationException("MemberExpression is not of PropertyInfo type."); }
-
+            
             return member;
         }
 
@@ -39,7 +39,7 @@ namespace Reefact.FluentRequestBinder {
 
         private readonly TRequest           _request;
         private readonly ValidationOptions  _validationOptions;
-        private readonly ArgumentsConverter _argumentsValidator;
+        private readonly Converter _argumentsValidator;
 
         #endregion
 
@@ -51,7 +51,7 @@ namespace Reefact.FluentRequestBinder {
 
             _request            = request;
             _validationOptions  = validationOptions;
-            _argumentsValidator = new ArgumentsConverter(validationOptions);
+            _argumentsValidator = new Converter(validationOptions);
         }
 
         internal RequestConverter(TRequest request, ValidationOptions validationOptions, string argNamePrefix) {
@@ -60,7 +60,7 @@ namespace Reefact.FluentRequestBinder {
 
             _request            = request;
             _validationOptions  = validationOptions;
-            _argumentsValidator = new ArgumentsConverter(validationOptions, argNamePrefix);
+            _argumentsValidator = new Converter(validationOptions, argNamePrefix);
         }
 
         #endregion

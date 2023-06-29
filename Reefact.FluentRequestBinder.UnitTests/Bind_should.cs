@@ -365,6 +365,67 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(validationError.ErrorMessage).IsEqualTo("GUID cannot be empty.");
         }
 
+        [Fact]
+        public void test() {
+            ArgumentsConverter bind = Bind.Arguments();
+            RequiredProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
+            Check.That(@int.IsValid).IsTrue();
+            Check.That(@int.Value).IsEqualTo(42);
+        }
+
+        [Fact]
+        public void test3() {
+            ArgumentsConverter bind = Bind.Arguments();
+            RequiredList<int>     @int = bind.ListOfSimpleProperties("toto", new[] { "33", "42", "69" }).AsRequired(int.Parse);
+            Check.That(@int.IsValid).IsTrue();
+            Check.That(@int.Value).IsEquivalentTo(33, 42, 69);
+        }
+
+        [Fact]
+        public void test2() {
+            ArgumentsConverter         bind        = Bind.Arguments();
+            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
+            Check.That(temperature.IsValid).IsTrue();
+            Check.That(temperature.Value).IsEqualTo(new Temperature(37, TemperatureUnit.Celsius));
+        }
+
+        [Fact]
+        public void test4() {
+            // Setup
+            ArgumentsConverter bind = Bind.Arguments();
+
+            // Exercise
+            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "42", Unit = "GTI-TURBO" }).AsRequired(TemperatureConverter.Convert);
+
+            // Verify
+            // - property
+            Check.That(temperature.IsValid).IsFalse();
+
+            // binder
+            Check.That(bind.HasError).IsTrue();
+            Check.That(bind.ErrorCount).IsEqualTo(1);
+            ValidationError validationError = bind.GetErrors().First();
+            Check.That(validationError.ArgumentName).IsEqualTo("Unit");
+            Check.That(validationError.ErrorMessage).IsEqualTo("Unknown temperature unit.");
+        }
+
+        [Fact]
+        public void test5() {
+            ArgumentsConverter bind          = Bind.Arguments();
+            List<Guid>                   parameter = new ()  { Guid.NewGuid(), Guid.NewGuid(), Guid.Empty };
+            RequiredList<AnyId>   ids           = bind.ListOfSimpleProperties("toto", parameter).AsRequired(AnyId.From);
+            // Verify
+            // - property
+            Check.That(ids.IsValid).IsFalse();
+
+            // binder
+            Check.That(bind.HasError).IsTrue();
+            Check.That(bind.ErrorCount).IsEqualTo(1);
+            ValidationError validationError = bind.GetErrors().First();
+            Check.That(validationError.ArgumentName).IsEqualTo("toto[2]");
+            Check.That(validationError.ErrorMessage).IsEqualTo("GUID cannot be empty.");
+        }
+
         private Role ConvertRole(RequestConverter<Role_v1> bind) {
             RequiredProperty<string> id   = bind.SimpleProperty(x => x.Id!).AsRequired();
             RequiredProperty<string> name = bind.SimpleProperty(x => x.Name!).AsRequired();

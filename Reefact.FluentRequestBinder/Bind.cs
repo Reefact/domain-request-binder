@@ -31,7 +31,7 @@ namespace Reefact.FluentRequestBinder {
             return new RequestConverter<TRequest>(request, ValidationOptions.Instance);
         }
 
-        /// <summary>Provides a dedicated <see cref="ArgumentsConverter">converter</see> for a request based on simple fields.</summary>
+        /// <summary>Provides a dedicated <see cref="Converter">converter</see> for a request based on simple fields.</summary>
         /// <returns>A <see cref="ArgumentsConverter">arguments converter.</see></returns>
         public static ArgumentsConverter Arguments() {
             return new ArgumentsConverter(ValidationOptions.Instance);

@@ -17,8 +17,8 @@ namespace Reefact.FluentRequestBinder {
         /// <returns>A <see cref="RequestConverter{TRequest}">request converter.</see></returns>
         RequestConverter<TRequest> PropertiesOf<TRequest>(TRequest request);
 
-        /// <summary>Provides a dedicated <see cref="ArgumentsConverter">converter</see> for a request based on simple fields.</summary>
-        /// <returns>A <see cref="ArgumentsConverter">arguments converter.</see></returns>
+        /// <summary>Provides a dedicated <see cref="Converter">converter</see> for a request based on simple fields.</summary>
+        /// <returns>A <see cref="Converter">arguments converter.</see></returns>
         ArgumentsConverter Arguments();
 
     }

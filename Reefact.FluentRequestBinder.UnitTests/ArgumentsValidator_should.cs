@@ -32,7 +32,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             AnyId              expectedAnyId = AnyId.From(anyGuid);
             string             anyName       = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.ConvertRequired(anyName, anyGuid, AnyId.From);
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.ArgumentName).IsEqualTo(anyName);
@@ -54,7 +54,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             AnyId              expectedAnyId = AnyId.From(anyGuid);
             string             anyName       = "teamId";
             // Exercise
-            OptionalProperty<AnyId> id = validator.ConvertOptional(anyName, anyGuid, AnyId.From);
+            OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.ArgumentName).IsEqualTo(anyName);
@@ -75,7 +75,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator = Bind.Arguments();
             string             anyName   = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.ConvertRequired(anyName, (Guid?)null, AnyId.From);
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.ArgumentName).IsEqualTo(anyName);
@@ -101,7 +101,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator = Bind.Arguments();
             string             anyName   = "teamId";
             // Exercise
-            OptionalProperty<AnyId> id = validator.ConvertOptional(anyName, (Guid?)null, AnyId.From);
+            OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsOptional(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.ArgumentName).IsEqualTo(anyName);
@@ -120,7 +120,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             string             anyName   = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.ConvertRequired<Guid, AnyId>(anyName, anyGuid, _ => throw new ApplicationException("Oulala"));
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
             Check.That(id.ArgumentName).IsEqualTo(anyName);
             Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
@@ -146,7 +146,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             string             anyName   = "teamId";
             // Exercise
-            OptionalProperty<AnyId> id = validator.ConvertOptional<Guid, AnyId>(anyName, anyGuid, _ => throw new ApplicationException("Oulala"));
+            OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
             Check.That(id.ArgumentName).IsEqualTo(anyName);
             Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
@@ -171,8 +171,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             // Exercise
-            validator.ConvertRequired("arg1", anyGuid, AnyId.From);
-            validator.ConvertRequired("arg2", "oui", FrenchYesNoConvert);
+            validator.SimpleProperty("arg1", anyGuid).AsRequired(AnyId.From);
+            validator.SimpleProperty("arg2", "oui").AsRequired(FrenchYesNoConvert);
             // Verify
             Check.That(validator.HasError).IsFalse();
             Check.That(validator.ToString()).IsEqualTo("No error recorded.");
@@ -183,8 +183,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
             // Exercise
-            validator.ConvertRequired("arg1", (Guid?)null, AnyId.From);
-            validator.ConvertRequired("arg2", "oui", FrenchYesNoConvert);
+            validator.SimpleProperty("arg1", (Guid?)null).AsRequired(AnyId.From);
+            validator.SimpleProperty("arg2", "oui").AsRequired(FrenchYesNoConvert);
             // Verify
             // - validation
             Check.That(validator.HasError).IsTrue();
@@ -202,9 +202,9 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
             // Exercise
-            validator.ConvertRequired("arg1", (Guid?)null, AnyId.From);
-            validator.ConvertRequired("arg2", "oui", FrenchYesNoConvert);
-            validator.ConvertRequired<string, bool>("arg3", "oui", _ => throw new ApplicationException("Oula!"));
+            validator.SimpleProperty("arg1", (Guid?)null).AsRequired(AnyId.From);
+            validator.SimpleProperty("arg2", "oui").AsRequired(FrenchYesNoConvert);
+            validator.SimpleProperty("arg3", "oui").AsRequired<bool>(_ => throw new ApplicationException("Oula!"));
             // Verify
             // - validation
             Check.That(validator.HasError).IsTrue();

@@ -9,10 +9,11 @@
     <Import_RootNamespace>Reefact.FluentRequestBinder</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultRequestBinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArgumentNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ArgumentsConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BadRequestException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ComplexPropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptionsBuilder.cs" />

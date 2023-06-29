@@ -2,9 +2,9 @@
 
     public enum TemperatureUnit {
 
-        Celcius,
+        Celsius,
 
-        Farenheit
+        Fahrenheit
 
     }
 
