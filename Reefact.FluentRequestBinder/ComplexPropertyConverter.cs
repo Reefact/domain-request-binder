@@ -14,9 +14,9 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter _argumentsValidator;
-        private readonly TArgument?         _argumentValue;
-        private readonly string             _argumentName;
+        private readonly Converter  _argumentsValidator;
+        private readonly TArgument? _argumentValue;
+        private readonly string     _argumentName;
 
         #endregion
 
@@ -83,13 +83,12 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
-        private string GetArgFullName(string argName)
-        {
+        private string GetArgFullName(string argName) {
             if (_argumentsValidator.ArgumentPrefix == null) { return argName; }
-            //if (argName                            == string.Empty) { return _argumentsValidator.ArgumentPrefix; }
 
             return $"{_argumentsValidator.ArgumentPrefix}.{argName}";
         }
+
     }
 
 }

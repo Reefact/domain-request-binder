@@ -15,7 +15,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter      _argumentsValidator;
+        private readonly Converter               _argumentsValidator;
         private readonly string                  _argumentName;
         private readonly IEnumerable<TArgument>? _argumentValues;
 
@@ -81,7 +81,7 @@ namespace Reefact.FluentRequestBinder {
             List<TProperty> propertyValues = new();
             int             index          = 0;
             foreach (TArgument argumentValue in _argumentValues) {
-                string                                   argumentName     = $"{_argumentName}[{index}]";
+                string                      argumentName     = $"{_argumentName}[{index}]";
                 OptionalProperty<TProperty> optionalProperty = _argumentsValidator.ConvertOptional(argumentName, argumentValue, convert);
                 if (optionalProperty is { IsValid: true, IsMissing: false }) {
                     propertyValues.Add(optionalProperty.Value!);
