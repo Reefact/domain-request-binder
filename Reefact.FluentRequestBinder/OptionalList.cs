@@ -36,7 +36,7 @@ namespace Reefact.FluentRequestBinder {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
             if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
 
-            return new OptionalList<TProperty>(argumentName, argumentValue, default, false, false);
+            return new OptionalList<TProperty>(argumentName, argumentValue, new List<TProperty>(), false, false);
         }
 
         #endregion
@@ -59,13 +59,13 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly IEnumerable<TProperty>? _value;
+        private readonly IEnumerable<TProperty> _value;
 
         #endregion
 
         #region Constructors declarations
 
-        private OptionalList(string argumentName, object? argumentValue, IEnumerable<TProperty>? propertyValue, bool isValid, bool isMissing) {
+        private OptionalList(string argumentName, object? argumentValue, IEnumerable<TProperty> propertyValue, bool isValid, bool isMissing) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 
             ArgumentName  = argumentName;
@@ -96,7 +96,7 @@ namespace Reefact.FluentRequestBinder {
         /// <exception cref="InvalidOperationException">
         ///     If the current instance of <see cref="RequiredProperty{TProperty}">required property</see> is not valid.
         /// </exception>
-        public IEnumerable<TProperty>? Value {
+        public IEnumerable<TProperty> Value {
             get {
                 if (!IsValid) { throw new InvalidOperationException("Property is not valid."); }
 
