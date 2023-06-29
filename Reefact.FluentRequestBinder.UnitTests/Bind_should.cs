@@ -4,6 +4,8 @@ using System.Linq;
 
 using NFluent;
 
+using Reefact.FluentRequestBinder.UnitTests.__forTesting;
+
 using Xunit;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -64,7 +66,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_required_list() {
+        public void handle_correctly_required_list_of_complex_properties() {
             // Setup
             Request_v1 requestWitRoles = new();
             requestWitRoles.Roles = new List<Role_v1> {
@@ -82,7 +84,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_missing_required_list() {
+        public void handle_correctly_missing_required_list_of_complex_properties() {
             // Setup
             Request_v1 requestWithMissingRoles = new();
             requestWithMissingRoles.Roles = null;
@@ -108,7 +110,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_required_list_having_one_item_invalid() {
+        public void handle_correctly_required_list_of_complex_properties_having_one_item_invalid() {
             // Setup
             Request_v1 requestWitRoles = new();
             requestWitRoles.Roles = new List<Role_v1> {
@@ -135,7 +137,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_optional_list() {
+        public void handle_correctly_optional_list_of_complex_properties() {
             // Setup
             Request_v1 requestWitRoles = new();
             requestWitRoles.Roles = new List<Role_v1> {
@@ -159,7 +161,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_missing_optional_list() {
+        public void handle_correctly_missing_optional_list_of_complex_properties() {
             // Setup
             Request_v1                   requestWitRoles = new();
             RequestConverter<Request_v1> bind            = Bind.PropertiesOf(requestWitRoles);
@@ -179,7 +181,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_optional_list_having_one_item_invalid() {
+        public void handle_correctly_optional_list_of_complex_properties_having_one_item_invalid() {
             // Setup
             Request_v1 requestWitRoles = new();
             requestWitRoles.Roles = new List<Role_v1> {
@@ -203,6 +205,161 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ValidationError validationError = bind.GetErrors().First();
             Check.That(validationError.ArgumentName).IsEqualTo("Roles[1].Name");
             Check.That(validationError.ErrorMessage).IsEqualTo("Argument is required.");
+        }
+
+        [Fact]
+        public void handle_correctly_required_list_of_simple_properties() {
+            // Setup
+            Request_v1 requestWitRoles = new();
+            Guid       guid1           = Guid.NewGuid();
+            Guid       guid2           = Guid.NewGuid();
+            requestWitRoles.FriendIds = new List<Guid> {
+                guid1,
+                guid2
+            };
+            RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
+
+            // Exercise
+            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+
+            // Verify
+            // - property
+            Check.That(friendIds.IsValid).IsTrue();
+            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
+
+            // - binder
+            Check.That(bind.HasError).IsFalse();
+        }
+
+        [Fact]
+        public void handle_correctly_missing_required_list_of_simple_properties() {
+            // Setup
+            Request_v1                   requestWithMissingRoles = new();
+            RequestConverter<Request_v1> bind                    = Bind.PropertiesOf(requestWithMissingRoles);
+
+            // Exercise
+            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+
+            // Verify
+            // - required property
+            Check.That(friendIds.IsValid).IsFalse();
+            Check.ThatCode(() => friendIds.Value)
+                 .Throws<InvalidOperationException>()
+                 .WithMessage("Property is not valid.");
+
+            // - binder
+            Check.That(bind.HasError).IsTrue();
+            Check.That(bind.ErrorCount).IsEqualTo(1);
+
+            ValidationError validationError = bind.GetErrors().First();
+            Check.That(validationError.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(validationError.ErrorMessage).IsEqualTo("Argument is required.");
+        }
+
+        [Fact]
+        public void handle_correctly_required_list_of_simple_properties_having_one_item_invalid() {
+            // Setup
+            Request_v1 requestWitRoles = new();
+            Guid       guid1           = Guid.NewGuid();
+            Guid       guid2           = Guid.NewGuid();
+            requestWitRoles.FriendIds = new List<Guid> {
+                guid1,
+                Guid.Empty,
+                guid2
+            };
+            RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
+
+            // Exercise
+            RequiredProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsRequired(AnyId.From);
+
+            // Verify
+            // - required property
+            Check.That(friendIds.IsValid).IsFalse();
+
+            // - binder
+            Check.That(bind.HasError).IsTrue();
+            Check.That(bind.ErrorCount).IsEqualTo(1);
+
+            ValidationError validationError = bind.GetErrors().First();
+            Check.That(validationError.ArgumentName).IsEqualTo("FriendIds[1]");
+            Check.That(validationError.ErrorMessage).IsEqualTo("GUID cannot be empty.");
+        }
+
+        [Fact]
+        public void handle_correctly_optional_list_of_simple_properties() {
+            // Setup
+            Request_v1 requestWitRoles = new();
+            Guid       guid1           = Guid.NewGuid();
+            Guid       guid2           = Guid.NewGuid();
+            requestWitRoles.FriendIds = new List<Guid> {
+                guid1,
+                guid2
+            };
+            RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
+
+            // Exercise
+            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+
+            // Verify
+            // - property
+            Check.That(friendIds.IsValid).IsTrue();
+            Check.That(friendIds.IsMissing).IsFalse();
+            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
+
+            // - binder
+            Check.That(bind.HasError).IsFalse();
+        }
+
+        [Fact]
+        public void handle_correctly_missing_optional_list_of_simple_properties() {
+            // Setup
+            Request_v1                   requestWitRoles = new();
+            RequestConverter<Request_v1> bind            = Bind.PropertiesOf(requestWitRoles);
+
+            // Exercise
+            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+
+            // Verify
+            // - property
+            Check.That(friendIds.IsValid).IsTrue();
+            Check.That(friendIds.IsMissing).IsTrue();
+            Check.That(friendIds.Value).IsNotNull();
+            Check.That(friendIds.Value).IsEmpty();
+
+            // - binder
+            Check.That(bind.HasError).IsFalse();
+        }
+
+        [Fact]
+        public void handle_correctly_optional_list_of_simple_properties_having_one_item_invalid()
+        {
+            // Setup
+            Request_v1 requestWitRoles = new();
+            Guid       guid1           = Guid.NewGuid();
+            Guid       guid2           = Guid.NewGuid();
+            requestWitRoles.FriendIds = new List<Guid> {
+                guid1,
+                Guid.Empty,
+                guid2
+            };
+            RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
+
+            // Exercise
+            OptionalProperty<IEnumerable<AnyId>> friendIds= bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+
+            // Verify
+            // - required property
+            Check.That(friendIds.IsValid).IsFalse();
+
+            // - binder
+            Check.That(bind.HasError).IsTrue();
+            Check.That(bind.ErrorCount).IsEqualTo(1);
+
+            ValidationError validationError = bind.GetErrors().First();
+            Check.That(validationError.ArgumentName).IsEqualTo("FriendIds[1]");
+            Check.That(validationError.ErrorMessage).IsEqualTo("GUID cannot be empty.");
         }
 
         private Role ConvertRole(RequestConverter<Role_v1> bind) {
@@ -234,8 +391,9 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         private class Request_v1 {
 
             // ReSharper disable once MemberHidesStaticFromOuterClass
-            public User_v1?       User  { get; set; }
-            public List<Role_v1>? Roles { get; set; }
+            public User_v1?       User      { get; set; }
+            public List<Role_v1>? Roles     { get; set; }
+            public List<Guid>?    FriendIds { get; set; }
 
         }
 

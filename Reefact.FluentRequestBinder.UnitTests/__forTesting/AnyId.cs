@@ -12,13 +12,15 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         #region Statics members declarations
 
-        public static AnyId From(Guid? guid) {
-            if (guid == null) { return new AnyId(Guid.Empty); }
+        public static AnyId From(Guid? guid)
+        {
+            if (guid == null) { throw new ArgumentNullException(); }
 
-            return new AnyId(guid.Value);
+            return From(guid.Value);
         }
 
         public static AnyId From(Guid guid) {
+            if (guid == Guid.Empty) { throw new ApplicationException("GUID cannot be empty."); }
             return new AnyId(guid);
         }
 

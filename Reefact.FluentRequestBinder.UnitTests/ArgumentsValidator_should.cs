@@ -30,7 +30,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator     = Bind.Arguments();
             Guid               anyGuid       = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             AnyId              expectedAnyId = AnyId.From(anyGuid);
-            var                anyName       = "teamId";
+            string             anyName       = "teamId";
             // Exercise
             RequiredProperty<AnyId> id = validator.ConvertRequired(anyName, anyGuid, AnyId.From);
             // Verify
@@ -46,15 +46,13 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(validator.GetErrors()).CountIs(0);
         }
 
-
         [Fact]
-        public static void handle_correctly_the_conversion_of_one_valid_optional_input()
-        {
+        public static void handle_correctly_the_conversion_of_one_valid_optional_input() {
             // Setup
             ArgumentsConverter validator     = Bind.Arguments();
             Guid               anyGuid       = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             AnyId              expectedAnyId = AnyId.From(anyGuid);
-            var                anyName       = "teamId";
+            string             anyName       = "teamId";
             // Exercise
             OptionalProperty<AnyId> id = validator.ConvertOptional(anyName, anyGuid, AnyId.From);
             // Verify
@@ -75,7 +73,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public static void handle_correctly_the_conversion_of_one_missing_required_input() {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
-            var                anyName   = "teamId";
+            string             anyName   = "teamId";
             // Exercise
             RequiredProperty<AnyId> id = validator.ConvertRequired(anyName, (Guid?)null, AnyId.From);
             // Verify
@@ -97,14 +95,11 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(singleError.ErrorMessage).IsEqualTo("Argument is required.");
         }
 
-
-
         [Fact]
-        public static void handle_correctly_the_conversion_of_one_missing_optional_input()
-        {
+        public static void handle_correctly_the_conversion_of_one_missing_optional_input() {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
-            var                anyName   = "teamId";
+            string             anyName   = "teamId";
             // Exercise
             OptionalProperty<AnyId> id = validator.ConvertOptional(anyName, (Guid?)null, AnyId.From);
             // Verify
@@ -123,7 +118,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
-            var                anyName   = "teamId";
+            string             anyName   = "teamId";
             // Exercise
             RequiredProperty<AnyId> id = validator.ConvertRequired<Guid, AnyId>(anyName, anyGuid, _ => throw new ApplicationException("Oulala"));
             // Verify
@@ -144,14 +139,12 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(singleError.ErrorMessage).IsEqualTo("Oulala");
         }
 
-
         [Fact]
-        public static void handle_correctly_the_failing_conversion_of_one_optional_input()
-        {
+        public static void handle_correctly_the_failing_conversion_of_one_optional_input() {
             // Setup
             ArgumentsConverter validator = Bind.Arguments();
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
-            var                anyName   = "teamId";
+            string             anyName   = "teamId";
             // Exercise
             OptionalProperty<AnyId> id = validator.ConvertOptional<Guid, AnyId>(anyName, anyGuid, _ => throw new ApplicationException("Oulala"));
             // Verify

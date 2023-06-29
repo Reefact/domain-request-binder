@@ -17,7 +17,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ComplexPropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\ValidationOptionsBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultPropertyNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ListConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ListOfSimplePropertiesConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ListOfComplexPropertiesConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OptionalProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestBinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestConverter.cs" />

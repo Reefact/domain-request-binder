@@ -5,7 +5,7 @@ namespace Reefact.FluentRequestBinder {
 
     /// <summary>Handle the conversion of an argument list to a property.</summary>
     /// <typeparam name="TArgument">The type of the input argument.</typeparam>
-    public sealed class ListConverter<TArgument> {
+    public sealed class ListOfComplexPropertiesConverter<TArgument> {
 
         #region Fields declarations
 
@@ -17,7 +17,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        internal ListConverter(ArgumentsConverter argumentsValidator, string argumentName, IEnumerable<TArgument>? argumentValues) {
+        internal ListOfComplexPropertiesConverter(ArgumentsConverter argumentsValidator, string argumentName, IEnumerable<TArgument>? argumentValues) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
