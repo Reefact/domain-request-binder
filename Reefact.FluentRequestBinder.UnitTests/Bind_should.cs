@@ -76,10 +76,14 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
 
             // Verify
+            // - list
             Check.That(roles.IsValid).IsTrue();
+            Check.That((List<Role>)roles).IsEquivalentTo(new Role("ADM", "Administrator"), new Role("DEV", "Developer"));
+
+            // - binder
             Check.That(bind.HasError).IsFalse();
         }
 
@@ -91,7 +95,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithMissingRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
 
             // Verify
             // - required property
@@ -121,7 +125,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            RequiredProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
+            RequiredList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsRequired(ConvertRole);
 
             // Verify
             // - required property
@@ -147,7 +151,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
 
             // Verify
             // - property
@@ -167,7 +171,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind            = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
 
             // Verify
             // - property
@@ -192,7 +196,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<Role>> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
+            OptionalList<Role> roles = bind.ListOfComplexProperties(r => r.Roles!).AsOptional(ConvertRole);
 
             // Verify
             // - required property
@@ -333,8 +337,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         }
 
         [Fact]
-        public void handle_correctly_optional_list_of_simple_properties_having_one_item_invalid()
-        {
+        public void handle_correctly_optional_list_of_simple_properties_having_one_item_invalid() {
             // Setup
             Request_v1 requestWitRoles = new();
             Guid       guid1           = Guid.NewGuid();
@@ -347,7 +350,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWitRoles);
 
             // Exercise
-            OptionalProperty<IEnumerable<AnyId>> friendIds= bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
+            OptionalProperty<IEnumerable<AnyId>> friendIds = bind.ListOfSimpleProperties(r => r.FriendIds!).AsOptional(AnyId.From);
 
             // Verify
             // - required property

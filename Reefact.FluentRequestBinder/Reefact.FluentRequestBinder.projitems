@@ -19,9 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)DefaultPropertyNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ListOfSimplePropertiesConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ListOfComplexPropertiesConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionalList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OptionalProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestBinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequiredList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequiredProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimplePropertyConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bind.cs" />

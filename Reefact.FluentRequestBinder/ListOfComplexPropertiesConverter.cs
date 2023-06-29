@@ -34,13 +34,13 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TProperty">The type of the output property.</typeparam>
         /// <param name="convert">The custom conversion method.</param>
         /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversion result.</returns>
-        public RequiredProperty<IEnumerable<TProperty>> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
+        public RequiredList<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
             if (_argumentValues is null) {
                 _argumentsValidator.RecordError(new ValidationError(_argumentName, "Argument is required."));
 
-                return RequiredProperty<IEnumerable<TProperty>>.CreateMissing(_argumentName);
+                return RequiredList<TProperty>.CreateMissing(_argumentName);
             }
 
             List<TProperty> propertyValues = new();
@@ -57,10 +57,10 @@ namespace Reefact.FluentRequestBinder {
             }
 
             if (_argumentsValidator.HasError) {
-                return RequiredProperty<IEnumerable<TProperty>>.CreateInvalid(_argumentName, _argumentValues);
+                return RequiredList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
             }
 
-            return RequiredProperty<IEnumerable<TProperty>>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return RequiredList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TProperty">The type of the output property.</typeparam>
         /// <param name="convert">The custom conversion method.</param>
         /// <returns>The <see cref="OptionalProperty{TArgument}">required argument</see> conversion result.</returns>
-        public OptionalProperty<IEnumerable<TProperty>> AsOptional<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
+        public OptionalList<TProperty> AsOptional<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValues is null) { return OptionalProperty<IEnumerable<TProperty>>.CreateMissing(_argumentName, Array.Empty<TProperty>()); }
+            if (_argumentValues is null) { return OptionalList<TProperty>.CreateMissing(_argumentName); }
 
             List<TProperty> propertyValues = new();
             int             index          = 0;
@@ -88,10 +88,10 @@ namespace Reefact.FluentRequestBinder {
             }
 
             if (_argumentsValidator.HasError) {
-                return OptionalProperty<IEnumerable<TProperty>>.CreateInvalid(_argumentName, _argumentValues);
+                return OptionalList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
             }
 
-            return OptionalProperty<IEnumerable<TProperty>>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return OptionalList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
         }
 
     }
