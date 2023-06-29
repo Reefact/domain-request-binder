@@ -16,10 +16,16 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
+        internal static OptionalProperty<TProperty> CreateMissing(string argumentName, TProperty empty) {
+            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
+
+            return new OptionalProperty<TProperty>(argumentName, null, empty, true, true);
+        }
+
         internal static OptionalProperty<TProperty> CreateMissing(string argumentName) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 
-            return new OptionalProperty<TProperty>(argumentName, null, default, true);
+            return new OptionalProperty<TProperty>(argumentName, null, default, true, true);
         }
 
         internal static OptionalProperty<TProperty> CreateValid(string argumentName, object argumentValue, TProperty propertyValue) {
@@ -27,14 +33,14 @@ namespace Reefact.FluentRequestBinder {
             if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
             if (propertyValue is null) { throw new ArgumentNullException(nameof(propertyValue)); }
 
-            return new OptionalProperty<TProperty>(argumentName, argumentValue, propertyValue, true);
+            return new OptionalProperty<TProperty>(argumentName, argumentValue, propertyValue, true, false);
         }
 
         internal static OptionalProperty<TProperty> CreateInvalid(string argumentName, object argumentValue) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
             if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
 
-            return new OptionalProperty<TProperty>(argumentName, argumentValue, default, false);
+            return new OptionalProperty<TProperty>(argumentName, argumentValue, default, false, false);
         }
 
         #endregion
@@ -63,13 +69,14 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        private OptionalProperty(string argumentName, object? argumentValue, TProperty? propertyValue, bool isValid) {
+        private OptionalProperty(string argumentName, object? argumentValue, TProperty? propertyValue, bool isValid, bool isMissing) {
             if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
 
             ArgumentName  = argumentName;
             ArgumentValue = argumentValue;
-            _value        = propertyValue;
             IsValid       = isValid;
+            IsMissing     = isMissing;
+            _value        = propertyValue;
         }
 
         #endregion
@@ -85,7 +92,7 @@ namespace Reefact.FluentRequestBinder {
         ///     Indicates if the current instance of <see cref="OptionalProperty{TProperty}">optional property</see> represents a
         ///     missing argument (<c>true</c>) or not (<c>false</c>).
         /// </summary>
-        public bool IsMissing => _value == null;
+        public bool IsMissing { get; }
 
         /// <summary>
         ///     The value of the property.

@@ -1,6 +1,7 @@
 ﻿#region Usings declarations
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -62,7 +63,7 @@ namespace Reefact.FluentRequestBinder {
             _validationOptions  = validationOptions;
             _argumentsValidator = new ArgumentsConverter(validationOptions, argNamePrefix);
         }
-        
+
         #endregion
 
         /// <inheritdoc />
@@ -98,6 +99,20 @@ namespace Reefact.FluentRequestBinder {
             return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
         }
 
+        /// <summary>
+        ///     Convert a list of complex properties.
+        /// </summary>
+        /// <param name="expression">The field selector.</param>
+        /// <typeparam name="TArgument">The type of the field.</typeparam>
+        /// <returns>An instance of <see cref="ListConverter{TArgument}" />.</returns>
+        public ListConverter<TArgument> ListOfComplexProperties<TArgument>(Expression<Func<TRequest, IEnumerable<TArgument>>> expression) {
+            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
+            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            var   argumentValue = (IEnumerable<TArgument>?)propertyInfo.GetValue(_request);
+
+            return new ListConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
+        }
+
         /// <inheritdoc />
         public void RecordError(ValidationError error) {
             _argumentsValidator.RecordError(error);
@@ -122,6 +137,7 @@ namespace Reefact.FluentRequestBinder {
         public override string ToString() {
             return _argumentsValidator.ToString();
         }
+
 
     }
 
