@@ -1,6 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 #endregion
@@ -14,21 +13,19 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter _argumentsValidator;
-        private readonly string             _argumentName;
-        private readonly TArgument?         _argumentValue;
+        private readonly Converter           _argumentsValidator;
+        private readonly Argument<TArgument> _argument;
 
         #endregion
 
         #region Constructors declarations
 
-        internal SimplePropertyConverter(Converter argumentsValidator, string argumentName, TArgument? argumentValue) {
+        internal SimplePropertyConverter(Converter argumentsValidator, Argument<TArgument> argument) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
 
             _argumentsValidator = argumentsValidator;
-            _argumentName       = argumentName;
-            _argumentValue      = argumentValue;
+            _argument           = argument;
         }
 
         #endregion
@@ -40,7 +37,9 @@ namespace Reefact.FluentRequestBinder {
         /// <param name="convert">The custom conversion method.</param>
         /// <returns>The <see cref="RequiredProperty{TArgument}">required property</see> conversion result.</returns>
         public RequiredProperty<TProperty> AsRequired<TProperty>(Func<TArgument, TProperty> convert) {
-            return _argumentsValidator.ConvertRequired(_argumentName, _argumentValue, convert);
+            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
+
+            return _argumentsValidator.ConvertRequired(_argument, convert);
         }
 
         /// <summary>
@@ -48,7 +47,7 @@ namespace Reefact.FluentRequestBinder {
         /// </summary>
         /// <returns>The <see cref="RequiredProperty{TArgument}">required property</see> conversion result.</returns>
         public RequiredProperty<TArgument> AsRequired() {
-            return _argumentsValidator.IsRequired(_argumentName, _argumentValue)!;
+            return _argumentsValidator.IsRequired(_argument);
         }
 
         /// <summary>
@@ -58,7 +57,9 @@ namespace Reefact.FluentRequestBinder {
         /// <param name="convert">The custom conversion method.</param>
         /// <returns>The <see cref="OptionalProperty{TArgument}">optional property</see> conversion result.</returns>
         public OptionalProperty<TProperty> AsOptional<TProperty>(Func<TArgument, TProperty> convert) {
-            return _argumentsValidator.ConvertOptional(_argumentName, _argumentValue, convert);
+            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
+
+            return _argumentsValidator.ConvertOptional(_argument, convert);
         }
 
     }

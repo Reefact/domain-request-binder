@@ -1,6 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,14 +18,24 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
+        [Obsolete("Use override with `Argument` parameter instead.")]
         internal static RequiredProperty<TProperty> CreateValid(string argumentName, object argumentValue, TProperty propertyValue) {
             if (argumentName  == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (argumentValue == null) { throw new ArgumentException("A required property could not be valid if argument value is null.", nameof(argumentValue)); }
-            if (propertyValue == null) { throw new ArgumentException("A required property could not be valid if property value is null.", nameof(propertyValue)); }
+            if (argumentValue == null) { throw RequiredPropertyException.CouldNotBeValidIfArgumentValueIsNull(argumentName); }
+            if (propertyValue == null) { throw RequiredPropertyException.CouldNotBeValidIfPropertyValueIsNull(argumentName); }
 
             return new RequiredProperty<TProperty>(argumentName, argumentValue, propertyValue, true);
         }
 
+        internal static RequiredProperty<TProperty> CreateValid(Argument argument, TProperty propertyValue) {
+            if (argument       == null) { throw new ArgumentNullException(nameof(argument)); }
+            if (argument.Value == null) { throw RequiredPropertyException.CouldNotBeValidIfArgumentValueIsNull(argument.Name); }
+            if (propertyValue  == null) { throw RequiredPropertyException.CouldNotBeValidIfPropertyValueIsNull(argument.Name); }
+
+            return new RequiredProperty<TProperty>(argument, propertyValue, true);
+        }
+
+        [Obsolete("Use override with `Argument` parameter instead.")]
         internal static RequiredProperty<TProperty> CreateInvalid(string argumentName, object argumentValue) {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
             if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
@@ -34,11 +43,23 @@ namespace Reefact.FluentRequestBinder {
             return new RequiredProperty<TProperty>(argumentName, argumentValue, default, false);
         }
 
+        internal static RequiredProperty<TProperty> CreateInvalid(Argument argument) {
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
+
+            return new RequiredProperty<TProperty>(argument, default, false);
+        }
+
+        [Obsolete("Use override with `Argument` parameter instead.")]
         internal static RequiredProperty<TProperty> CreateMissing(string argumentName) {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
-            
 
             return new RequiredProperty<TProperty>(argumentName, null, default, false);
+        }
+
+        internal static RequiredProperty<TProperty> CreateMissing(Argument argument) {
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
+
+            return new RequiredProperty<TProperty>(argument.Name, null, default, false);
         }
 
         #endregion
@@ -66,6 +87,15 @@ namespace Reefact.FluentRequestBinder {
         #endregion
 
         #region Constructors declarations
+
+        private RequiredProperty(Argument argument, TProperty? propertyValue, bool isValid) {
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
+
+            ArgumentName  = argument.Name;
+            ArgumentValue = argument.Value;
+            _value        = propertyValue;
+            IsValid       = isValid;
+        }
 
         private RequiredProperty(string argumentName, object? argumentValue, TProperty? propertyValue, bool isValid) {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
@@ -100,12 +130,17 @@ namespace Reefact.FluentRequestBinder {
         }
 
         /// <summary>The name of the argument.</summary>
+        // [Obsolete("Use property `Argument` instead.")]
         public string ArgumentName { get; }
 
         /// <summary>
         ///     The value of the argument.
         /// </summary>
+        // [Obsolete("Use property `Argument` instead.")]
         public object? ArgumentValue { get; }
+
+        // TODO: Replace the two properties above [Obsolete] with an `Argument` property.
+        // public Argument Argument { get; }
 
         /// <inheritdoc />
         public override string ToString() {

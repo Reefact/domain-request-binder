@@ -1,6 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 #endregion
@@ -16,25 +15,23 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        internal static OptionalProperty<TProperty> CreateMissing(string argumentName) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
+        internal static OptionalProperty<TProperty> CreateMissing<TArgument>(Argument<TArgument> argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            return new OptionalProperty<TProperty>(argumentName, null, default, true, true);
+            return new OptionalProperty<TProperty>(argument, default, true, true);
         }
 
-        internal static OptionalProperty<TProperty> CreateValid(string argumentName, object argumentValue, TProperty propertyValue) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
+        internal static OptionalProperty<TProperty> CreateValid(Argument argument, TProperty propertyValue) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
             if (propertyValue is null) { throw new ArgumentNullException(nameof(propertyValue)); }
 
-            return new OptionalProperty<TProperty>(argumentName, argumentValue, propertyValue, true, false);
+            return new OptionalProperty<TProperty>(argument, propertyValue, true, false);
         }
 
-        internal static OptionalProperty<TProperty> CreateInvalid(string argumentName, object argumentValue) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
+        internal static OptionalProperty<TProperty> CreateInvalid(Argument argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            return new OptionalProperty<TProperty>(argumentName, argumentValue, default, false, false);
+            return new OptionalProperty<TProperty>(argument, default, false, false);
         }
 
         #endregion
@@ -50,7 +47,7 @@ namespace Reefact.FluentRequestBinder {
         public static implicit operator TProperty?(OptionalProperty<TProperty> optionalProperty) {
             if (optionalProperty == null) { throw new ArgumentNullException(nameof(optionalProperty)); }
 
-            if (!optionalProperty.IsValid) { throw new InvalidOperationException($"Value '{optionalProperty.ArgumentValue}' of argument '{optionalProperty.ArgumentName}' is not valid."); }
+            if (!optionalProperty.IsValid) { throw new InvalidOperationException($"Value '{optionalProperty.Argument.Value}' of argument '{optionalProperty.Argument.Name}' is not valid."); }
 
             return optionalProperty.Value;
         }
@@ -63,14 +60,13 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        private OptionalProperty(string argumentName, object? argumentValue, TProperty? propertyValue, bool isValid, bool isMissing) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
+        private OptionalProperty(Argument argument, TProperty? propertyValue, bool isValid, bool isMissing) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            ArgumentName  = argumentName;
-            ArgumentValue = argumentValue;
-            IsValid       = isValid;
-            IsMissing     = isMissing;
-            _value        = propertyValue;
+            Argument  = argument;
+            IsValid   = isValid;
+            IsMissing = isMissing;
+            _value    = propertyValue;
         }
 
         #endregion
@@ -102,15 +98,12 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
-        /// <summary>The name of the argument.</summary>
-        public string ArgumentName { get; }
-
-        /// <summary>The value of the argument.</summary>
-        public object? ArgumentValue { get; }
+        /// <summary>The underlying argument.</summary>
+        public Argument Argument { get; }
 
         /// <inheritdoc />
         public override string ToString() {
-            return (IsValid ? _value?.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
+            return (IsValid ? _value?.ToString() : Argument.Value?.ToString()) ?? string.Empty;
         }
 
     }

@@ -57,8 +57,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsTrue();
             Check.That(id.IsMissing).IsFalse();
             Check.That(id.Value).IsEqualTo(expectedAnyId);
@@ -104,8 +104,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsOptional(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsNull();
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsNull();
             Check.That(id.IsValid).IsTrue();
             Check.That(id.IsMissing).IsTrue();
             Check.That(id.Value).IsNull();
@@ -148,8 +148,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Exercise
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
                  .Throws<InvalidOperationException>()

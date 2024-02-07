@@ -1,7 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -29,7 +27,7 @@ namespace Reefact.FluentRequestBinder {
 
             PropertyInfo? member = body.Member as PropertyInfo;
             if (member == null) { throw new InvalidOperationException("MemberExpression is not of PropertyInfo type."); }
-            
+
             return member;
         }
 
@@ -37,9 +35,8 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly TRequest           _request;
-        private readonly ValidationOptions  _validationOptions;
-        private readonly Converter _argumentsValidator;
+        private readonly ValidationOptions _validationOptions;
+        private readonly Converter         _argumentsValidator;
 
         #endregion
 
@@ -49,7 +46,7 @@ namespace Reefact.FluentRequestBinder {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            _request            = request;
+            Input               = request;
             _validationOptions  = validationOptions;
             _argumentsValidator = new Converter(validationOptions);
         }
@@ -58,12 +55,17 @@ namespace Reefact.FluentRequestBinder {
             if (request == null) { throw new ArgumentNullException(nameof(request)); }
             if (validationOptions is null) { throw new ArgumentNullException(nameof(validationOptions)); }
 
-            _request            = request;
+            Input               = request;
             _validationOptions  = validationOptions;
             _argumentsValidator = new Converter(validationOptions, argNamePrefix);
         }
 
         #endregion
+
+        /// <summary>
+        ///     Gets the input currently being validated.
+        /// </summary>
+        public TRequest Input { get; }
 
         /// <inheritdoc />
         public bool HasError => _argumentsValidator.HasError;
@@ -77,11 +79,9 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="SimplePropertyConverter{TArgument}" />.</returns>
         public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
-            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            TArgument?   argumentValue = (TArgument?)propertyInfo.GetValue(_request);
+            Argument<TArgument> argument = BuildArgument(expression);
 
-            return new SimplePropertyConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
+            return new SimplePropertyConverter<TArgument>(_argumentsValidator, argument);
         }
 
         /// <summary>
@@ -91,11 +91,9 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="ComplexPropertyConverter{TArgument}" />.</returns>
         public ComplexPropertyConverter<TArgument> ComplexProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
-            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            TArgument?   argumentValue = (TArgument?)propertyInfo.GetValue(_request);
+            Argument<TArgument> argument = BuildArgument(expression);
 
-            return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
+            return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argument);
         }
 
         /// <summary>
@@ -105,9 +103,9 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="ListOfComplexPropertiesConverter{TArgument}" />.</returns>
         public ListOfSimplePropertiesConverter<TArgument> ListOfSimpleProperties<TArgument>(Expression<Func<TRequest, IEnumerable<TArgument>>> expression) {
-            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
-            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            var          argumentValue = (IEnumerable<TArgument>?)propertyInfo.GetValue(_request);
+            PropertyInfo            propertyInfo  = GetPropertyInfo(expression);
+            string                  argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            IEnumerable<TArgument>? argumentValue = (IEnumerable<TArgument>?)propertyInfo.GetValue(Input);
 
             return new ListOfSimplePropertiesConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
         }
@@ -119,9 +117,9 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="ListOfComplexPropertiesConverter{TArgument}" />.</returns>
         public ListOfComplexPropertiesConverter<TArgument> ListOfComplexProperties<TArgument>(Expression<Func<TRequest, IEnumerable<TArgument>>> expression) {
-            PropertyInfo propertyInfo  = GetPropertyInfo(expression);
-            string       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            var          argumentValue = (IEnumerable<TArgument>?)propertyInfo.GetValue(_request);
+            PropertyInfo            propertyInfo  = GetPropertyInfo(expression);
+            string                  argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            IEnumerable<TArgument>? argumentValue = (IEnumerable<TArgument>?)propertyInfo.GetValue(Input);
 
             return new ListOfComplexPropertiesConverter<TArgument>(_argumentsValidator, argumentName, argumentValue);
         }
@@ -149,6 +147,15 @@ namespace Reefact.FluentRequestBinder {
         /// <inheritdoc />
         public override string ToString() {
             return _argumentsValidator.ToString();
+        }
+
+        private Argument<TArgument> BuildArgument<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
+            PropertyInfo        propertyInfo  = GetPropertyInfo(expression);
+            string              argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            TArgument?          argumentValue = (TArgument?)propertyInfo.GetValue(Input);
+            Argument<TArgument> argument      = new(argumentName, argumentValue);
+
+            return argument;
         }
 
     }

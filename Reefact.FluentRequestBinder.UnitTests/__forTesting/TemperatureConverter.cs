@@ -1,7 +1,5 @@
 #region Usings declarations
 
-using System;
-
 #endregion
 
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
@@ -10,12 +8,12 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         #region Statics members declarations
 
-        public static Temperature Convert(RequestConverter<Temperature_v1> convert) {
-            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
+        public static Temperature Convert(RequestConverter<Temperature_v1> bind) {
+            if (bind is null) { throw new ArgumentNullException(nameof(bind)); }
 
-            RequiredProperty<double>          temperatureValue = convert.SimpleProperty(e => e.Value).AsRequired(double.Parse!);
-            RequiredProperty<TemperatureUnit> temperatureUnit  = convert.SimpleProperty(e => e.Unit).AsRequired(TemperatureUnitConverter.Convert!);
-            convert.AssertHasNoError();
+            RequiredProperty<double>          temperatureValue = bind.SimpleProperty(e => e.Value).AsRequired(double.Parse!);
+            RequiredProperty<TemperatureUnit> temperatureUnit  = bind.SimpleProperty(e => e.Unit).AsRequired(TemperatureUnitConverter.Convert!);
+            bind.AssertHasNoError();
 
             return new Temperature(temperatureValue, temperatureUnit);
         }
