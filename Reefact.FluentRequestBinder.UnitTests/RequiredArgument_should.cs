@@ -14,35 +14,35 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void Test() {
             // Setup
-            Argument<string> argument       = new("HiddenInnerWisdom", "42");
-            const int        convertedValue = 42;
+            ReferenceArgument<string> argument       = new("HiddenInnerWisdom", "42");
+            const int                 convertedValue = 42;
             // Exercise
-            RequiredProperty<int> requiredArgument = RequiredProperty<int>.CreateValid(argument, convertedValue);
+            RequiredValueProperty<int> requiredArgument = RequiredValueProperty<int>.CreateValid(argument, convertedValue);
             // Verify
-            Check.That(requiredArgument.ArgumentName).IsEqualTo(argument.Name);
+            Check.That(requiredArgument.Argument.Name).IsEqualTo(argument.Name);
             Check.That(requiredArgument.IsValid).IsEqualTo(true);
-            Check.That(requiredArgument.ArgumentValue).IsEqualTo(argument.Value);
+            Check.That(requiredArgument.Argument.Value).IsEqualTo(argument.Value);
             Check.That(requiredArgument.Value).IsEqualTo(convertedValue);
         }
 
         [Fact]
         public void throw_an_exception_trying_to_get_the_value_of_an_invalid_argument() {
             // Setup
-            Argument<string> argument = new("SarahConnor", "yes");
+            ReferenceArgument<string> argument = new("SarahConnor", "yes");
             // Exercise
-            RequiredProperty<bool> requiredArgument = RequiredProperty<bool>.CreateInvalid(argument);
+            RequiredValueProperty<bool> requiredArgument = RequiredValueProperty<bool>.CreateInvalid(argument);
             // Verify
-            Check.That(requiredArgument.ArgumentName).IsEqualTo(argument.Name);
+            Check.That(requiredArgument.Argument.Name).IsEqualTo(argument.Name);
             Check.That(requiredArgument.IsValid).IsEqualTo(false);
-            Check.That(requiredArgument.ArgumentValue).IsEqualTo(argument.Value);
+            Check.That(requiredArgument.Argument.Value).IsEqualTo(argument.Value);
             Check.ThatCode(() => requiredArgument.Value).Throws<InvalidOperationException>();
         }
 
         [Fact]
         public void return_the_string_representation_of_the_converted_value_if_is_valid() {
             // Setup
-            Argument<int>            argument         = new("argh", 33);
-            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateValid(argument, "trente-trois");
+            ValueArgument<int>                argument         = new("argh", 33);
+            RequiredReferenceProperty<string> requiredArgument = RequiredReferenceProperty<string>.CreateValid(argument, "trente-trois");
             // Exercise
             string output = requiredArgument.ToString();
             // Verify
@@ -52,8 +52,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void return_the_string_representation_of_the_original_value_if_is_not_valid() {
             // Setup
-            Argument<int>         argument         = new("argh", 33);
-            RequiredProperty<int> requiredArgument = RequiredProperty<int>.CreateInvalid(argument);
+            ValueArgument<int>         argument         = new("argh", 33);
+            RequiredValueProperty<int> requiredArgument = RequiredValueProperty<int>.CreateInvalid(argument);
             // Exercise
             string output = requiredArgument.ToString();
             // Verify
@@ -63,18 +63,18 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void never_accept_null_arg_name() {
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<int>.CreateInvalid(null!))
+            Check.ThatCode(() => RequiredValueProperty<int>.CreateInvalid(null!))
                  .Throws<ArgumentNullException>();
-            Check.ThatCode(() => RequiredProperty<int>.CreateValid(null!, 33))
+            Check.ThatCode(() => RequiredValueProperty<int>.CreateValid(null!, 33))
                  .Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void not_accept_a_null_arg_value_when_is_valid() {
             // Setup
-            Argument<int?> argument = new("anyName", null);
+            ValueArgument<int> argument = new("anyName", null);
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<string>.CreateValid(argument, "trente-trois"))
+            Check.ThatCode(() => RequiredReferenceProperty<string>.CreateValid(argument, "trente-trois"))
                  .Throws<RequiredPropertyException>()
                  .WithMessage("A required property could not be valid if argument value is null.");
         }
@@ -82,9 +82,9 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void not_accept_a_null_converted_arg_value_when_is_valid() {
             // Setup
-            Argument<string> argument = new("anyName", "33");
+            ReferenceArgument<string> argument = new("anyName", "33");
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<string>.CreateValid(argument, null!))
+            Check.ThatCode(() => RequiredReferenceProperty<string>.CreateValid(argument, null!))
                  .Throws<RequiredPropertyException>()
                  .WithMessage("A required property could not be valid if property value is null.");
         }
@@ -92,8 +92,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void return_its_value_when_implicitly_converted_while_valid() {
             // Setup
-            Argument<int>            argument         = new("argh", 33);
-            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateValid(argument, "trente-trois");
+            ValueArgument<int>                argument         = new("argh", 33);
+            RequiredReferenceProperty<string> requiredArgument = RequiredReferenceProperty<string>.CreateValid(argument, "trente-trois");
             // Exercise
             string value = requiredArgument;
             // Verify
@@ -103,8 +103,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void throw_an_exception_when_implicitly_converted_while_invalid() {
             // Setup
-            Argument<int>            argument         = new("argh", 33);
-            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateInvalid(argument);
+            ValueArgument<int>                argument         = new("argh", 33);
+            RequiredReferenceProperty<string> requiredArgument = RequiredReferenceProperty<string>.CreateInvalid(argument);
             // Exercise & verify
             Check.ThatCode(() => {
                       // ReSharper disable once UnusedVariable

@@ -15,7 +15,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        internal static OptionalProperty<TProperty> CreateMissing<TArgument>(Argument<TArgument> argument) {
+        internal static OptionalProperty<TProperty> CreateMissing<TArgument>(ReferenceArgument<TArgument> argument) {
             if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
             return new OptionalProperty<TProperty>(argument, default, true, true);
@@ -88,7 +88,7 @@ namespace Reefact.FluentRequestBinder {
         ///     The value of the property.
         /// </summary>
         /// <exception cref="InvalidOperationException">
-        ///     If the current instance of <see cref="RequiredProperty{TProperty}">required property</see> is not valid.
+        ///     If the current instance of <see cref="RequiredReferenceProperty{TProperty}">required property</see> is not valid.
         /// </exception>
         public TProperty? Value {
             get {

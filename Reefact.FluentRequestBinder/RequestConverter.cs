@@ -78,8 +78,9 @@ namespace Reefact.FluentRequestBinder {
         /// <param name="expression">The field selector.</param>
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="SimplePropertyConverter{TArgument}" />.</returns>
-        public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            Argument<TArgument> argument = BuildArgument(expression);
+        public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression)
+            where TArgument : class {
+            ReferenceArgument<TArgument> argument = BuildArgument(expression);
 
             return new SimplePropertyConverter<TArgument>(_argumentsValidator, argument);
         }
@@ -91,7 +92,7 @@ namespace Reefact.FluentRequestBinder {
         /// <typeparam name="TArgument">The type of the field.</typeparam>
         /// <returns>An instance of <see cref="ComplexPropertyConverter{TArgument}" />.</returns>
         public ComplexPropertyConverter<TArgument> ComplexProperty<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            Argument<TArgument> argument = BuildArgument(expression);
+            ReferenceArgument<TArgument> argument = BuildArgument(expression);
 
             return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argument);
         }
@@ -149,11 +150,11 @@ namespace Reefact.FluentRequestBinder {
             return _argumentsValidator.ToString();
         }
 
-        private Argument<TArgument> BuildArgument<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
-            PropertyInfo        propertyInfo  = GetPropertyInfo(expression);
-            string              argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
-            TArgument?          argumentValue = (TArgument?)propertyInfo.GetValue(Input);
-            Argument<TArgument> argument      = new(argumentName, argumentValue);
+        private ReferenceArgument<TArgument> BuildArgument<TArgument>(Expression<Func<TRequest, TArgument>> expression) {
+            PropertyInfo                 propertyInfo  = GetPropertyInfo(expression);
+            string                       argumentName  = _validationOptions.PropertyNameProvider.GetArgumentNameFrom(propertyInfo);
+            TArgument?                   argumentValue = (TArgument?)propertyInfo.GetValue(Input);
+            ReferenceArgument<TArgument> argument      = new(argumentName, argumentValue);
 
             return argument;
         }

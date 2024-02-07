@@ -75,9 +75,9 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             PromoteMember_v1                   requestWithError = CreateValidPromoteMemberCommand();
             RequestConverter<PromoteMember_v1> bind             = Bind.PropertiesOf(requestWithError);
             // Exercise
-            RequiredProperty<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
-            RequiredProperty<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
-            RequiredProperty<Temperature> temperature = bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
+            RequiredReferenceProperty<AnyId>       teamId      = bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
+            RequiredReferenceProperty<string>      utCode      = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
+            RequiredReferenceProperty<Temperature> temperature = bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
             // Verify
             Check.That(bind.HasError).IsFalse();
             Check.ThatCode(() => {
@@ -93,7 +93,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<PromoteMember_v1> bind             = Bind.PropertiesOf(requestWithError);
             // Exercise
             bind.SimpleProperty(c => c.TeamId).AsRequired(AnyId.From);
-            RequiredProperty<string> utCode = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
+            RequiredReferenceProperty<string> utCode = bind.SimpleProperty(c => c.MemberUtCode!).AsRequired();
             bind.ComplexProperty(c => c.Temperature!).AsRequired(TemperatureConverter.Convert);
             // Verify
             Check.That(bind.ErrorCount).IsEqualTo(1);

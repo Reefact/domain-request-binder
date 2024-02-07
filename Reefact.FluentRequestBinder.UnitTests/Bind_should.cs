@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Usings declarations
 
 using NFluent;
 
 using Reefact.FluentRequestBinder.UnitTests.__forTesting;
 
-using Xunit;
+#endregion
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Local
@@ -26,7 +24,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind               = Bind.PropertiesOf(requestWithoutUser);
 
             // Exercise
-            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
+            RequiredReferenceProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -51,7 +49,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithoutUserName);
 
             // Exercise
-            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
+            RequiredReferenceProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -371,7 +369,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter bind = Bind.Arguments();
 
             // Exercise
-            RequiredProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
+            RequiredValueProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
 
             // Verify
             Check.That(@int.IsValid).IsTrue();
@@ -397,7 +395,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter bind = Bind.Arguments();
 
             // Exercise
-            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
+            RequiredReferenceProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
 
             // Verify
             Check.That(temperature.IsValid).IsTrue();
@@ -410,7 +408,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter bind = Bind.Arguments();
 
             // Exercise
-            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "42", Unit = "GTI-TURBO" }).AsRequired(TemperatureConverter.Convert);
+            RequiredReferenceProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "42", Unit = "GTI-TURBO" }).AsRequired(TemperatureConverter.Convert);
 
             // Verify
             // - property

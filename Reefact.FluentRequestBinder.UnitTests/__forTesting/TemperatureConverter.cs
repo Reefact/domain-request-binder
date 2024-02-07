@@ -11,8 +11,8 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
         public static Temperature Convert(RequestConverter<Temperature_v1> bind) {
             if (bind is null) { throw new ArgumentNullException(nameof(bind)); }
 
-            RequiredProperty<double>          temperatureValue = bind.SimpleProperty(e => e.Value).AsRequired(double.Parse!);
-            RequiredProperty<TemperatureUnit> temperatureUnit  = bind.SimpleProperty(e => e.Unit).AsRequired(TemperatureUnitConverter.Convert!);
+            RequiredReferenceProperty<double>          temperatureValue = bind.SimpleProperty(e => e.Value).AsRequired(double.Parse!);
+            RequiredReferenceProperty<TemperatureUnit> temperatureUnit  = bind.SimpleProperty(e => e.Unit).AsRequired(TemperatureUnitConverter.Convert!);
             bind.AssertHasNoError();
 
             return new Temperature(temperatureValue, temperatureUnit);

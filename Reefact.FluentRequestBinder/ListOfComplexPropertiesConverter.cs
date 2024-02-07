@@ -1,7 +1,5 @@
-﻿#region Using declarations
+﻿#region Usings declarations
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 #endregion
@@ -15,7 +13,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter      _argumentsValidator;
+        private readonly Converter               _argumentsValidator;
         private readonly string                  _argumentName;
         private readonly IEnumerable<TArgument>? _argumentValues;
 
@@ -39,7 +37,7 @@ namespace Reefact.FluentRequestBinder {
         /// </summary>
         /// <typeparam name="TProperty">The type of the output property.</typeparam>
         /// <param name="convert">The custom conversion method.</param>
-        /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversion result.</returns>
+        /// <returns>The <see cref="RequiredReferenceProperty{TProperty}">required argument</see> conversion result.</returns>
         public RequiredList<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 

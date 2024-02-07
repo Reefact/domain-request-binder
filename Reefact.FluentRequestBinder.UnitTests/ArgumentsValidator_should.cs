@@ -32,11 +32,11 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             AnyId              expectedAnyId = AnyId.From(anyGuid);
             string             anyName       = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
+            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsTrue();
             Check.That(id.Value).IsEqualTo(expectedAnyId);
             // - validation
@@ -75,11 +75,11 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator = Bind.Arguments();
             string             anyName   = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
+            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsNull();
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsNull();
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
                  .Throws<InvalidOperationException>()
@@ -120,10 +120,10 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             string             anyName   = "teamId";
             // Exercise
-            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
+            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
                  .Throws<InvalidOperationException>()

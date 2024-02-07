@@ -1,7 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
-
 #endregion
 
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
@@ -11,8 +9,8 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
         #region Statics members declarations
 
         public static User Convert(RequestConverter<User_v1> bind) {
-            RequiredProperty<Guid>     id       = bind.SimpleProperty(u => u.Id).AsRequired();
-            RequiredProperty<UserName> userName = bind.ComplexProperty(u => u.UserName).AsRequired(UserNameConverter.Convert!);
+            RequiredReferenceProperty<Guid>     id       = bind.SimpleProperty(u => u.Id).AsRequired();
+            RequiredReferenceProperty<UserName> userName = bind.ComplexProperty(u => u.UserName).AsRequired(UserNameConverter.Convert!);
             bind.AssertHasNoError();
 
             return new User(id, userName);

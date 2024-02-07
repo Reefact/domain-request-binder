@@ -1,9 +1,6 @@
 ﻿#region Usings declarations
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 #endregion
 
@@ -95,7 +92,7 @@ namespace Reefact.FluentRequestBinder {
         ///     The value of the property.
         /// </summary>
         /// <exception cref="InvalidOperationException">
-        ///     If the current instance of <see cref="RequiredProperty{TProperty}">required property</see> is not valid.
+        ///     If the current instance of <see cref="RequiredReferenceProperty{TProperty}">required property</see> is not valid.
         /// </exception>
         public IEnumerable<TProperty> Value {
             get {

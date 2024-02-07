@@ -9,8 +9,8 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
         #region Statics members declarations
 
         public static UserName Convert(RequestConverter<UserName_v1> bind) {
-            RequiredProperty<string> firstName = bind.SimpleProperty(x => x.FirstName).AsRequired()!;
-            RequiredProperty<string> lastName  = bind.SimpleProperty(x => x.LastName).AsRequired()!;
+            RequiredReferenceProperty<string> firstName = bind.SimpleProperty(x => x.FirstName).AsRequired()!;
+            RequiredReferenceProperty<string> lastName  = bind.SimpleProperty(x => x.LastName).AsRequired()!;
             bind.AssertHasNoError();
 
             return new UserName(firstName, lastName);

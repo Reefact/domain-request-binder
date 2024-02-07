@@ -47,7 +47,7 @@ namespace Reefact.FluentRequestBinder {
         public SimplePropertyConverter<TArgument> SimpleProperty<TArgument>(string argumentName, TArgument? argumentValue) {
             if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
 
-            Argument<TArgument> argument = new(argumentName, argumentValue);
+            ReferenceArgument<TArgument> argument = new(argumentName, argumentValue);
 
             return new SimplePropertyConverter<TArgument>(_argumentsValidator, argument);
         }
@@ -60,9 +60,9 @@ namespace Reefact.FluentRequestBinder {
         /// <returns>An instance of <see cref="ComplexPropertyConverter{TArgument}" />.</returns>
         public ComplexPropertyConverter<TArgument> ComplexProperty<TArgument>(TArgument? argumentValue) {
 #if NET8_0
-            Argument<TArgument> argument = Argument.UnNamed(argumentValue);
+            ReferenceArgument<TArgument> argument = Argument.UnNamed(argumentValue);
 #else
-            Argument<TArgument> argument = Argument<TArgument>.UnNamed(argumentValue);
+            ReferenceArgument<TArgument> argument = ReferenceArgument<TArgument>.UnNamed(argumentValue);
 #endif
 
             return new ComplexPropertyConverter<TArgument>(_argumentsValidator, argument);
