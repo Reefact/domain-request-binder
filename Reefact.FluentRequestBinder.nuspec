@@ -3,13 +3,13 @@
   <metadata>
     <id>Reefact.FluentRequestBinder</id>
     <title>Fluent Request Binder</title>
-    <version>0.2.0</version>
-    <authors>Sylvain AURAT</authors>
-    <owners>Sylvain AURAT</owners>
+    <version>0.3.0</version>
+    <authors>Sylvain AURAT;Reefact</authors>
+    <owners>Reefact</owners>
     <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/Reefact/request-validation</projectUrl>
-    <repository type="git" url="https://github.com/Reefact/request-validation.git"/>
+    <repository type="git" url="https://github.com/Reefact/fluent-request-binder.git"/>
     <icon>images\icon.png</icon>
     <description>Provides a simple solution for validating queries and commands - as DTOs - and converting their properties into Value Objects in a fluent manner.</description>
     <summary>
@@ -23,26 +23,31 @@
     </summary>
     <readme>docs\readme.md</readme>
     <releaseNotes></releaseNotes>
-    <copyright>©2023 Reefact</copyright>
+    <copyright>©2024 Reefact</copyright>
     <language>en-US</language>
     <tags>DDD DomainDrivenDesign Binding CQRS Decoupling Contract Query Command Request ModelDrivenDesign REST fluent</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.6.2" ></group>
+      <group targetFramework=".NETFramework4.5" ></group>
       <group targetFramework=".NETStandard2.0" ></group>
+      <group targetFramework=".NET8.0" ></group>
     </dependencies>
   </metadata>
   <files>
     <!-- Images -->
     <file src="icon.png" target="images\" />
     <!-- Library -->
-    <!-- .NETFramework4.6.2  -->
-    <file src="Reefact.FluentRequestBinder.Net462\bin\Debug\Reefact.FluentRequestBinder.dll" target="lib\net462\Reefact.FluentRequestBinder.dll" />
-    <file src="Reefact.FluentRequestBinder.Net462\bin\Debug\Reefact.FluentRequestBinder.xml" target="lib\net462\Reefact.FluentRequestBinder.xml" />
-    <file src="Reefact.FluentRequestBinder.Net462\bin\Debug\Reefact.FluentRequestBinder.pdb" target="lib\net462\Reefact.FluentRequestBinder.pdb" />
+    <!-- .NETFramework4.5  -->
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net45\Reefact.FluentRequestBinder.dll" target="lib\net45\Reefact.FluentRequestBinder.dll" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net45\Reefact.FluentRequestBinder.xml" target="lib\net45\Reefact.FluentRequestBinder.xml" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net45\Reefact.FluentRequestBinder.pdb" target="lib\net45\Reefact.FluentRequestBinder.pdb" />
     <!-- .NETStandard2.0 -->
-    <file src="Reefact.FluentRequestBinder.NetStandard20\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.dll" target="lib\netstandard2.0\Reefact.FluentRequestBinder.dll" />
-    <file src="Reefact.FluentRequestBinder.NetStandard20\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.xml" target="lib\netstandard2.0\Reefact.FluentRequestBinder.xml" />
-    <file src="Reefact.FluentRequestBinder.NetStandard20\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.pdb" target="lib\netstandard2.0\Reefact.FluentRequestBinder.pdb" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.dll" target="lib\netstandard2.0\Reefact.FluentRequestBinder.dll" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.xml" target="lib\netstandard2.0\Reefact.FluentRequestBinder.xml" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\netstandard2.0\Reefact.FluentRequestBinder.pdb" target="lib\netstandard2.0\Reefact.FluentRequestBinder.pdb" />
+    <!-- .NET8.0 -->
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net8.0\Reefact.FluentRequestBinder.dll" target="lib\net8.0\Reefact.FluentRequestBinder.dll" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net8.0\Reefact.FluentRequestBinder.xml" target="lib\net8.0\Reefact.FluentRequestBinder.xml" />
+    <file src="Reefact.FluentRequestBinder\bin\Debug\net8.0\Reefact.FluentRequestBinder.pdb" target="lib\net8.0\Reefact.FluentRequestBinder.pdb" />
     <!-- Documentation -->
     <file src="README-EN.md" target="docs\readme.md" />
   </files>
