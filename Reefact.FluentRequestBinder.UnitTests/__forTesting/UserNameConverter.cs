@@ -1,8 +1,4 @@
-﻿#region Usings declarations
-
-#endregion
-
-namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
+﻿namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
     internal static class UserNameConverter {
 

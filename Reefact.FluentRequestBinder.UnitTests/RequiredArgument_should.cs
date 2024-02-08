@@ -1,9 +1,10 @@
-﻿using System;
+﻿#region Usings declarations
+
 using System.Diagnostics.CodeAnalysis;
 
 using NFluent;
 
-using Xunit;
+#endregion
 
 namespace Reefact.FluentRequestBinder.UnitTests {
 
@@ -13,36 +14,33 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void Test() {
             // Setup
-            const string argName        = "HiddenInnerWisdom";
-            const string originalValue  = "42";
-            const int    convertedValue = 42;
+            Argument<string> argument       = new("HiddenInnerWisdom", "42");
+            const int        convertedValue = 42;
             // Exercise
-            RequiredProperty<int> requiredArgument = RequiredProperty<int>.CreateValid(argName, originalValue, convertedValue);
+            RequiredProperty<int> requiredArgument = RequiredProperty<int>.CreateValid(argument, convertedValue);
             // Verify
-            Check.That(requiredArgument.ArgumentName).IsEqualTo(argName);
+            Check.That(requiredArgument.Argument.Name).IsEqualTo(argument.Name);
             Check.That(requiredArgument.IsValid).IsEqualTo(true);
-            Check.That(requiredArgument.ArgumentValue).IsEqualTo(originalValue);
+            Check.That(requiredArgument.Argument.Value).IsEqualTo(argument.Value);
             Check.That(requiredArgument.Value).IsEqualTo(convertedValue);
         }
 
         [Fact]
         public void throw_an_exception_trying_to_get_the_value_of_an_invalid_argument() {
             // Setup
-            const string argName       = "SarahConnor";
-            const string originalValue = "yes";
-            // Exercise
-            RequiredProperty<bool> requiredArgument = RequiredProperty<bool>.CreateInvalid(argName, originalValue);
-            // Verify
-            Check.That(requiredArgument.ArgumentName).IsEqualTo(argName);
-            Check.That(requiredArgument.IsValid).IsEqualTo(false);
-            Check.That(requiredArgument.ArgumentValue).IsEqualTo(originalValue);
-            Check.ThatCode(() => requiredArgument.Value).Throws<InvalidOperationException>();
+            Argument<string>       argument         = new("SarahConnor", "yes");
+            RequiredProperty<bool> requiredArgument = RequiredProperty<bool>.CreateInvalid(argument);
+            // Exercise & Verify
+            Check.ThatCode(() => requiredArgument.Value)
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
         }
 
         [Fact]
         public void return_the_string_representation_of_the_converted_value_if_is_valid() {
             // Setup
-            var requiredArgument = RequiredProperty<string>.CreateValid("argh", 33, "trente-trois");
+            Argument<int>            argument         = new("argh", 33);
+            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateValid(argument, "trente-trois");
             // Exercise
             string output = requiredArgument.ToString();
             // Verify
@@ -52,7 +50,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void return_the_string_representation_of_the_original_value_if_is_not_valid() {
             // Setup
-            var requiredArgument = RequiredProperty<int>.CreateInvalid("argh", 33);
+            Argument<int>         argument         = new("argh", 33);
+            RequiredProperty<int> requiredArgument = RequiredProperty<int>.CreateInvalid(argument);
             // Exercise
             string output = requiredArgument.ToString();
             // Verify
@@ -62,32 +61,37 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void never_accept_null_arg_name() {
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<int>.CreateInvalid(null!, "trente-trois"))
+            Check.ThatCode(() => RequiredProperty<int>.CreateInvalid(null!))
                  .Throws<ArgumentNullException>();
-            Check.ThatCode(() => RequiredProperty<int>.CreateValid(null!, "trente-trois", 33))
+            Check.ThatCode(() => RequiredProperty<int>.CreateValid(null!, 33))
                  .Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void not_accept_a_null_arg_value_when_is_valid() {
+            // Setup
+            Argument<int?> argument = new("anyName", null);
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<string>.CreateValid("anyName", null!, "trente-trois"))
-                 .Throws<ArgumentException>()
-                 .WithMessage("A required property could not be valid if argument value is null. (Parameter 'argumentValue')");
+            Check.ThatCode(() => RequiredProperty<string>.CreateValid(argument, "trente-trois"))
+                 .Throws<RequiredPropertyException>()
+                 .WithMessage(ExceptionMessage.RequiredProperty_CouldNotBeValidIfArgumentValueIsNull);
         }
 
         [Fact]
         public void not_accept_a_null_converted_arg_value_when_is_valid() {
+            // Setup
+            Argument<string> argument = new("anyName", "33");
             // Exercise & verify
-            Check.ThatCode(() => RequiredProperty<string>.CreateValid("anyName", "33", null!))
-                 .Throws<ArgumentException>()
-                 .WithMessage("A required property could not be valid if property value is null. (Parameter 'propertyValue')");
+            Check.ThatCode(() => RequiredProperty<string>.CreateValid(argument, null!))
+                 .Throws<RequiredPropertyException>()
+                 .WithMessage(ExceptionMessage.RequiredProperty_CouldNotBeValidIfPropertyValueIsNull);
         }
 
         [Fact]
         public void return_its_value_when_implicitly_converted_while_valid() {
             // Setup
-            var requiredArgument = RequiredProperty<string>.CreateValid("argh", 33, "trente-trois");
+            Argument<int>            argument         = new("argh", 33);
+            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateValid(argument, "trente-trois");
             // Exercise
             string value = requiredArgument;
             // Verify
@@ -97,13 +101,15 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         [Fact]
         public void throw_an_exception_when_implicitly_converted_while_invalid() {
             // Setup
-            var requiredArgument = RequiredProperty<string>.CreateInvalid("argh", 33);
+            Argument<int>            argument         = new("argh", 33);
+            RequiredProperty<string> requiredArgument = RequiredProperty<string>.CreateInvalid(argument);
             // Exercise & verify
             Check.ThatCode(() => {
                       // ReSharper disable once UnusedVariable
                       string value = requiredArgument;
                   })
-                 .Throws<InvalidOperationException>().WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
         }
 
     }

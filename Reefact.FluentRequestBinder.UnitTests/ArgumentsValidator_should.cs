@@ -35,8 +35,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsTrue();
             Check.That(id.Value).IsEqualTo(expectedAnyId);
             // - validation
@@ -57,8 +57,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsTrue();
             Check.That(id.IsMissing).IsFalse();
             Check.That(id.Value).IsEqualTo(expectedAnyId);
@@ -78,12 +78,12 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsNull();
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsNull();
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);
@@ -104,8 +104,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsOptional(AnyId.From);
             // Verify
             // - converted value
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsNull();
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsNull();
             Check.That(id.IsValid).IsTrue();
             Check.That(id.IsMissing).IsTrue();
             Check.That(id.Value).IsNull();
@@ -122,12 +122,12 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Exercise
             RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);
@@ -148,12 +148,12 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Exercise
             OptionalProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsOptional<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
-            Check.That(id.ArgumentName).IsEqualTo(anyName);
-            Check.That(id.ArgumentValue).IsEqualTo(anyGuid);
+            Check.That(id.Argument.Name).IsEqualTo(anyName);
+            Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);

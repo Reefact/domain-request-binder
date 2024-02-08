@@ -1,10 +1,7 @@
 ﻿#region Usings declarations
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 #endregion
 
@@ -21,26 +18,24 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        internal static RequiredList<TProperty> CreateValid(string argumentName, object argumentValue, IEnumerable<TProperty> propertyValue) {
-            if (argumentName  == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (argumentValue == null) { throw new ArgumentException("A required property could not be valid if argument value is null.", nameof(argumentValue)); }
-            if (propertyValue == null) { throw new ArgumentException("A required property could not be valid if property value is null.", nameof(propertyValue)); }
+        internal static RequiredList<TProperty> CreateValid(Argument argument, List<TProperty> propertyValue) {
+            if (argument       == null) { throw new ArgumentNullException(nameof(argument)); }
+            if (argument.Value == null) { throw RequiredPropertyException.CouldNotBeValidIfArgumentValueIsNull(argument.Name); }
+            if (propertyValue  == null) { throw RequiredPropertyException.CouldNotBeValidIfPropertyValueIsNull(argument.Name); }
 
-            return new RequiredList<TProperty>(argumentName, argumentValue, propertyValue, true);
+            return new RequiredList<TProperty>(argument, propertyValue, true, false);
         }
 
-        internal static RequiredList<TProperty> CreateInvalid(string argumentName, object argumentValue) {
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (argumentValue is null) { throw new ArgumentNullException(nameof(argumentValue)); }
+        internal static RequiredList<TProperty> CreateInvalid(Argument argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            return new RequiredList<TProperty>(argumentName, argumentValue, new List<TProperty>(), false);
+            return new RequiredList<TProperty>(argument, null, false, false);
         }
 
-        internal static RequiredList<TProperty> CreateMissing(string argumentName) {
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
-            
+        internal static RequiredList<TProperty> CreateMissing(Argument argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            return new RequiredList<TProperty>(argumentName, null, new List<TProperty>(), false);
+            return new RequiredList<TProperty>(argument, null, false, true);
         }
 
         #endregion
@@ -63,19 +58,17 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly IEnumerable<TProperty> _value;
+        private readonly List<TProperty>? _value;
 
         #endregion
 
         #region Constructors declarations
 
-        private RequiredList(string argumentName, object? argumentValue, IEnumerable<TProperty> propertyValue, bool isValid) {
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
-
-            ArgumentName  = argumentName;
-            ArgumentValue = argumentValue;
-            _value        = propertyValue;
-            IsValid       = isValid;
+        private RequiredList(Argument argument, List<TProperty>? propertyValue, bool isValid, bool isMissing) {
+            Argument  = argument;
+            _value    = propertyValue;
+            IsValid   = isValid;
+            IsMissing = isMissing;
         }
 
         #endregion
@@ -88,6 +81,12 @@ namespace Reefact.FluentRequestBinder {
         public bool IsValid { get; }
 
         /// <summary>
+        ///     Indicates if the current instance of <see cref="OptionalProperty{TProperty}">optional property</see> represents a
+        ///     missing argument (<c>true</c>) or not (<c>false</c>).
+        /// </summary>
+        public bool IsMissing { get; }
+
+        /// <summary>
         ///     The value of the property.
         /// </summary>
         /// <exception cref="InvalidOperationException">
@@ -95,23 +94,19 @@ namespace Reefact.FluentRequestBinder {
         /// </exception>
         public IEnumerable<TProperty> Value {
             get {
-                if (!IsValid) { throw new InvalidOperationException("Property is not valid."); }
+                if (!IsValid) { throw PropertyException.ValueIsInvalid(); }
+                if (IsMissing) { throw PropertyException.ValueIsMissing(); }
 
-                return _value;
+                return _value!;
             }
         }
 
-        /// <summary>The name of the argument.</summary>
-        public string ArgumentName { get; }
-
-        /// <summary>
-        ///     The value of the argument.
-        /// </summary>
-        public object? ArgumentValue { get; }
+        /// <summary>The underlying argument.</summary>
+        public Argument Argument { get; }
 
         /// <inheritdoc />
         public override string ToString() {
-            return (IsValid ? _value.ToString() : ArgumentValue?.ToString()) ?? string.Empty;
+            return (IsValid ? _value!.ToString() : Argument.Value?.ToString()) ?? string.Empty;
         }
 
     }

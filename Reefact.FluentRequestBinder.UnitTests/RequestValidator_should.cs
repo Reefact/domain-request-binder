@@ -1,13 +1,8 @@
 ﻿#region Usings declarations
 
-using System;
-using System.Linq;
-
 using NFluent;
 
 using Reefact.FluentRequestBinder.UnitTests.__forTesting;
-
-using Xunit;
 
 #endregion
 
@@ -37,7 +32,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
                 MemberUtCode = "UT3245",
                 Temperature = new Temperature_v1 {
                     Value = "37",
-                    Unit = "celsius"
+                    Unit  = "celsius"
                 }
             };
 
@@ -49,7 +44,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
                 TeamId = Guid.NewGuid(),
                 Temperature = new Temperature_v1 {
                     Value = "37",
-                    Unit = "celsius"
+                    Unit  = "celsius"
                 }
             };
 

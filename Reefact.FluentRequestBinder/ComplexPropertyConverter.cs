@@ -1,6 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 #endregion
@@ -14,21 +13,19 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter  _argumentsValidator;
-        private readonly TArgument? _argumentValue;
-        private readonly string     _argumentName;
+        private readonly Converter           _argumentsValidator;
+        private readonly Argument<TArgument> _argument;
 
         #endregion
 
         #region Constructors declarations
 
-        internal ComplexPropertyConverter(Converter argumentsValidator, string argumentName, TArgument? argumentValue) {
+        internal ComplexPropertyConverter(Converter argumentsValidator, Argument<TArgument> argument) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
 
             _argumentsValidator = argumentsValidator;
-            _argumentName       = GetArgFullName(argumentName);
-            _argumentValue      = argumentValue;
+            _argument           = argument.AppendPrefix(_argumentsValidator.ArgumentPrefix);
         }
 
         #endregion
@@ -42,21 +39,21 @@ namespace Reefact.FluentRequestBinder {
         public RequiredProperty<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValue is null) {
-                _argumentsValidator.RecordError(new ValidationError(_argumentName, "Argument is required."));
+            if (_argument.IsMissing) {
+                _argumentsValidator.RecordError(new ValidationError(_argument.Name, "Argument is required."));
 
-                return RequiredProperty<TProperty>.CreateMissing(_argumentName);
+                return RequiredProperty<TProperty>.CreateMissing(_argument);
             }
 
             try {
-                RequestConverter<TArgument> requestConverter = new(_argumentValue, _argumentsValidator.Options, _argumentName);
+                RequestConverter<TArgument> requestConverter = new(_argument.Value!, _argumentsValidator.Options, _argument.Name);
                 TProperty                   propertyValue    = convert(requestConverter);
 
-                return RequiredProperty<TProperty>.CreateValid(_argumentName, _argumentValue, propertyValue);
+                return RequiredProperty<TProperty>.CreateValid(_argument, propertyValue);
             } catch (BadRequestException ex) {
                 _argumentsValidator.RecordErrors(ex.ValidationErrors);
 
-                return RequiredProperty<TProperty>.CreateInvalid(_argumentName, _argumentValue);
+                return RequiredProperty<TProperty>.CreateInvalid(_argument);
             }
         }
 
@@ -69,24 +66,18 @@ namespace Reefact.FluentRequestBinder {
         public OptionalProperty<TProperty> AsOptional<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValue == null) { return OptionalProperty<TProperty>.CreateMissing(_argumentName); }
+            if (_argument.IsMissing) { return OptionalProperty<TProperty>.CreateMissing(_argument); }
 
             try {
-                RequestConverter<TArgument> requestConverter = new(_argumentValue, _argumentsValidator.Options, _argumentName);
+                RequestConverter<TArgument> requestConverter = new(_argument.Value!, _argumentsValidator.Options, _argument.Name);
                 TProperty                   propertyValue    = convert(requestConverter);
 
-                return OptionalProperty<TProperty>.CreateValid(_argumentName, _argumentValue, propertyValue);
+                return OptionalProperty<TProperty>.CreateValid(_argument, propertyValue);
             } catch (BadRequestException ex) {
                 _argumentsValidator.RecordErrors(ex.ValidationErrors);
 
-                return OptionalProperty<TProperty>.CreateInvalid(_argumentName, _argumentValue);
+                return OptionalProperty<TProperty>.CreateInvalid(_argument);
             }
-        }
-
-        private string GetArgFullName(string argName) {
-            if (_argumentsValidator.ArgumentPrefix == null) { return argName; }
-
-            return $"{_argumentsValidator.ArgumentPrefix}.{argName}";
         }
 
     }

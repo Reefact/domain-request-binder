@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Usings declarations
 
 using NFluent;
 
 using Reefact.FluentRequestBinder.UnitTests.__forTesting;
 
-using Xunit;
+#endregion
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Local
@@ -101,8 +99,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - required property
             Check.That(roles.IsValid).IsFalse();
             Check.ThatCode(() => roles.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
 
             // - binder
             Check.That(bind.HasError).IsTrue();
@@ -157,7 +155,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - property
             Check.That(roles.IsValid).IsTrue();
             Check.That(roles.IsMissing).IsFalse();
-            Check.That(roles.ArgumentName).IsEqualTo("Roles");
+            Check.That(roles.Argument.Name).IsEqualTo("Roles");
             Check.That(roles.Value).IsEquivalentTo(new Role("ADM", "Administrator"), new Role("DEV", "Developer"));
 
             // - binder
@@ -229,7 +227,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Verify
             // - property
             Check.That(friendIds.IsValid).IsTrue();
-            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Argument.Name).IsEqualTo("FriendIds");
             Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
 
             // - binder
@@ -249,8 +247,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - required property
             Check.That(friendIds.IsValid).IsFalse();
             Check.ThatCode(() => friendIds.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
 
             // - binder
             Check.That(bind.HasError).IsTrue();
@@ -309,7 +307,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - property
             Check.That(friendIds.IsValid).IsTrue();
             Check.That(friendIds.IsMissing).IsFalse();
-            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Argument.Name).IsEqualTo("FriendIds");
             Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
 
             // - binder
@@ -369,7 +367,6 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void handle_correctly_required_simple_property() {
             // Setup
             ArgumentsConverter bind = Bind.Arguments();
-
             // Exercise
             RequiredProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
 

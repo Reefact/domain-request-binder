@@ -1,7 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 using Reefact.FluentRequestBinder.Configuration;
@@ -46,78 +44,6 @@ namespace Reefact.FluentRequestBinder {
         internal ValidationOptions Options        { get; }
         internal string?           ArgumentPrefix { get; }
 
-        public RequiredProperty<TProperty> ConvertRequired<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
-
-            string argumentFullName = GetArgFullName(argumentName);
-
-            if (argumentValue == null) {
-                ValidationError error = new(argumentFullName, "Argument is required.");
-                _errors.Add(error);
-
-                return RequiredProperty<TProperty>.CreateMissing(argumentFullName);
-            }
-
-            try {
-                TProperty                   propertyValue    = convert(argumentValue);
-                RequiredProperty<TProperty> requiredProperty = RequiredProperty<TProperty>.CreateValid(argumentFullName, argumentValue, propertyValue);
-
-                return requiredProperty;
-            } catch (BadRequestException ex) {
-                _errors.AddRange(ex.ValidationErrors);
-
-                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argumentFullName, argumentValue);
-
-                return convertRequired;
-            } catch (ApplicationException ex) {
-                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
-
-                ValidationError error = new(argumentFullName, ex.Message);
-                _errors.Add(error);
-                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argumentName, argumentValue);
-
-                return convertRequired;
-            }
-        }
-
-        public OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(string argumentName, TArgument? argumentValue, Func<TArgument, TProperty> convert) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-            if (convert      == null) { throw new ArgumentNullException(nameof(convert)); }
-
-            string argFullName = GetArgFullName(argumentName);
-
-            if (argumentValue == null) { return OptionalProperty<TProperty>.CreateMissing(argumentName); }
-
-            try {
-                TProperty                   propertyValue   = convert(argumentValue);
-                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateValid(argFullName, argumentValue, propertyValue);
-
-                return convertRequired;
-            } catch (ApplicationException ex) {
-                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
-
-                ValidationError error = new(argFullName, ex.Message);
-                _errors.Add(error);
-                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateInvalid(argFullName, argumentValue);
-
-                return convertRequired;
-            }
-        }
-
-        public RequiredProperty<TProperty> IsRequired<TProperty>(string argumentName, TProperty argumentValue) {
-            if (argumentName == null) { throw new ArgumentNullException(nameof(argumentName)); }
-
-            string argFullName = GetArgFullName(argumentName);
-
-            if (argumentValue != null) { return RequiredProperty<TProperty>.CreateValid(argFullName, argumentValue, argumentValue); }
-
-            ValidationError error = new(argFullName, "Argument is required.");
-            _errors.Add(error);
-
-            return RequiredProperty<TProperty>.CreateMissing(argFullName);
-        }
-
         /// <inheritdoc />
         public void RecordError(ValidationError error) {
             if (error is null) { throw new ArgumentNullException(nameof(error)); }
@@ -150,10 +76,75 @@ namespace Reefact.FluentRequestBinder {
             return $"{_errors.Count} errors have been recorded.";
         }
 
-        private string GetArgFullName(string argName) {
-            if (ArgumentPrefix == null) { return argName; }
+        internal RequiredProperty<TProperty> ConvertRequired<TArgument, TProperty>(Argument<TArgument> argument, Func<TArgument, TProperty> convert) {
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
+            if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            return $"{ArgumentPrefix}.{argName}";
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+
+            if (prefixedArgument.IsMissing) {
+                _errors.Add(ValidationError.ArgumentIsRequired(prefixedArgument));
+
+                return RequiredProperty<TProperty>.CreateMissing(prefixedArgument);
+            }
+
+            try {
+                TProperty                   propertyValue    = convert(argument.Value!);
+                RequiredProperty<TProperty> requiredProperty = RequiredProperty<TProperty>.CreateValid(prefixedArgument, propertyValue);
+
+                return requiredProperty;
+            } catch (BadRequestException ex) {
+                _errors.AddRange(ex.ValidationErrors);
+
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(prefixedArgument);
+
+                return convertRequired;
+            } catch (ApplicationException ex) {
+                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+
+                ValidationError error = new(prefixedArgument.Name, ex.Message);
+                _errors.Add(error);
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argument);
+
+                return convertRequired;
+            }
+        }
+
+        internal OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(Argument<TArgument> argument, Func<TArgument, TProperty> convert) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
+            if (convert  == null) { throw new ArgumentNullException(nameof(convert)); }
+
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+
+            if (prefixedArgument.IsMissing) { return OptionalProperty<TProperty>.CreateMissing(prefixedArgument); }
+
+            try {
+                TProperty                   propertyValue   = convert(prefixedArgument.Value!);
+                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateValid(prefixedArgument, propertyValue);
+
+                return convertRequired;
+            } catch (ApplicationException ex) {
+                if (!Options.HandledExceptionType.IsInstanceOfType(ex)) { throw; }
+
+                ValidationError error = new(prefixedArgument.Name, ex.Message);
+                _errors.Add(error);
+                OptionalProperty<TProperty> convertRequired = OptionalProperty<TProperty>.CreateInvalid(prefixedArgument);
+
+                return convertRequired;
+            }
+        }
+
+        internal RequiredProperty<TArgument> IsRequired<TArgument>(Argument<TArgument> argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
+
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+
+            if (prefixedArgument.IsFulfilled) { return RequiredProperty<TArgument>.CreateValid(prefixedArgument, prefixedArgument.Value!); }
+
+            ValidationError error = new(prefixedArgument.Name, "Argument is required.");
+            _errors.Add(error);
+
+            return RequiredProperty<TArgument>.CreateMissing(prefixedArgument);
         }
 
     }

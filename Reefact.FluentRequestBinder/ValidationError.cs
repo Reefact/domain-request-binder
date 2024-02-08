@@ -1,6 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,6 +13,16 @@ namespace Reefact.FluentRequestBinder {
     [DebuggerDisplay("{ToString()}")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public sealed class ValidationError : IEquatable<ValidationError> {
+
+        #region Statics members declarations
+
+        public static ValidationError ArgumentIsRequired(Argument argument) {
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
+
+            return new ValidationError(argument.Name, "Argument is required.");
+        }
+
+        #endregion
 
         /// <summary>Determines whether the specified <see cref="ValidationError">validation errors</see> instances are equals.</summary>
         /// <param name="left">The first <see cref="ValidationError">validation error</see> to compare.</param>
