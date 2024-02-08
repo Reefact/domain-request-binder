@@ -15,12 +15,6 @@ namespace Reefact.FluentRequestBinder {
 
         #region Statics members declarations
 
-        internal static OptionalProperty<TProperty> CreateMissing<TArgument>(ReferenceArgument<TArgument> argument) {
-            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
-
-            return new OptionalProperty<TProperty>(argument, default, true, true);
-        }
-
         internal static OptionalProperty<TProperty> CreateValid(Argument argument, TProperty propertyValue) {
             if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
             if (propertyValue is null) { throw new ArgumentNullException(nameof(propertyValue)); }
@@ -32,6 +26,12 @@ namespace Reefact.FluentRequestBinder {
             if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
             return new OptionalProperty<TProperty>(argument, default, false, false);
+        }
+
+        internal static OptionalProperty<TProperty> CreateMissing<TArgument>(Argument<TArgument> argument) {
+            if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
+
+            return new OptionalProperty<TProperty>(argument, default, true, true);
         }
 
         #endregion
@@ -46,8 +46,6 @@ namespace Reefact.FluentRequestBinder {
         /// </exception>
         public static implicit operator TProperty?(OptionalProperty<TProperty> optionalProperty) {
             if (optionalProperty == null) { throw new ArgumentNullException(nameof(optionalProperty)); }
-
-            if (!optionalProperty.IsValid) { throw new InvalidOperationException($"Value '{optionalProperty.Argument.Value}' of argument '{optionalProperty.Argument.Name}' is not valid."); }
 
             return optionalProperty.Value;
         }
@@ -88,11 +86,11 @@ namespace Reefact.FluentRequestBinder {
         ///     The value of the property.
         /// </summary>
         /// <exception cref="InvalidOperationException">
-        ///     If the current instance of <see cref="RequiredReferenceProperty{TProperty}">required property</see> is not valid.
+        ///     If the current instance of <see cref="RequiredProperty{TProperty}">required property</see> is not valid.
         /// </exception>
         public TProperty? Value {
             get {
-                if (!IsValid) { throw new InvalidOperationException("Property is not valid."); }
+                if (!IsValid) { throw PropertyException.ValueIsInvalid(); }
 
                 return _value;
             }

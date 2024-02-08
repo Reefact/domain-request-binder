@@ -5,11 +5,11 @@
         #region Statics members declarations
 
         public static RequiredPropertyException CouldNotBeValidIfArgumentValueIsNull(string argumentName) {
-            return new RequiredPropertyException("A required property could not be valid if argument value is null.");
+            return new RequiredPropertyException(ExceptionMessage.RequiredProperty_CouldNotBeValidIfArgumentValueIsNull);
         }
 
         public static RequiredPropertyException CouldNotBeValidIfPropertyValueIsNull(string argumentName) {
-            return new RequiredPropertyException("A required property could not be valid if property value is null.");
+            return new RequiredPropertyException(ExceptionMessage.RequiredProperty_CouldNotBeValidIfPropertyValueIsNull);
         }
 
         #endregion

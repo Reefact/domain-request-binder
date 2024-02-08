@@ -13,14 +13,14 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter                    _argumentsValidator;
-        private readonly ReferenceArgument<TArgument> _argument;
+        private readonly Converter           _argumentsValidator;
+        private readonly Argument<TArgument> _argument;
 
         #endregion
 
         #region Constructors declarations
 
-        internal SimplePropertyConverter(Converter argumentsValidator, ReferenceArgument<TArgument> argument) {
+        internal SimplePropertyConverter(Converter argumentsValidator, Argument<TArgument> argument) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
             if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
 
@@ -35,8 +35,8 @@ namespace Reefact.FluentRequestBinder {
         /// </summary>
         /// <typeparam name="TProperty">The type of the output property.</typeparam>
         /// <param name="convert">The custom conversion method.</param>
-        /// <returns>The <see cref="RequiredReferenceProperty{TProperty}">required property</see> conversion result.</returns>
-        public RequiredReferenceProperty<TProperty> AsRequired<TProperty>(Func<TArgument, TProperty> convert) {
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required property</see> conversion result.</returns>
+        public RequiredProperty<TProperty> AsRequired<TProperty>(Func<TArgument, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
             return _argumentsValidator.ConvertRequired(_argument, convert);
@@ -45,8 +45,8 @@ namespace Reefact.FluentRequestBinder {
         /// <summary>
         ///     Converts an argument to a simple required property without conversion - only the argument requirement is checked.
         /// </summary>
-        /// <returns>The <see cref="RequiredReferenceProperty{TProperty}">required property</see> conversion result.</returns>
-        public RequiredReferenceProperty<TArgument> AsRequired() {
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required property</see> conversion result.</returns>
+        public RequiredProperty<TArgument> AsRequired() {
             return _argumentsValidator.IsRequired(_argument);
         }
 
@@ -60,6 +60,10 @@ namespace Reefact.FluentRequestBinder {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
             return _argumentsValidator.ConvertOptional(_argument, convert);
+        }
+
+        public OptionalProperty<TArgument> AsOptional() {
+            return _argumentsValidator.ConvertOptional(_argument, x => x);
         }
 
     }

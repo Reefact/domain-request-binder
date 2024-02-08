@@ -32,7 +32,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             AnyId              expectedAnyId = AnyId.From(anyGuid);
             string             anyName       = "teamId";
             // Exercise
-            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.Argument.Name).IsEqualTo(anyName);
@@ -75,15 +75,15 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter validator = Bind.Arguments();
             string             anyName   = "teamId";
             // Exercise
-            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, (Guid?)null).AsRequired(AnyId.From);
             // Verify
             // - converted value
             Check.That(id.Argument.Name).IsEqualTo(anyName);
             Check.That(id.Argument.Value).IsNull();
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);
@@ -120,14 +120,14 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Guid               anyGuid   = Guid.Parse("3EAFD5D9-CB0C-4D24-945A-9D9713D19B65");
             string             anyName   = "teamId";
             // Exercise
-            RequiredReferenceProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
+            RequiredProperty<AnyId> id = validator.SimpleProperty(anyName, anyGuid).AsRequired<AnyId>(_ => throw new ApplicationException("Oulala"));
             // Verify
             Check.That(id.Argument.Name).IsEqualTo(anyName);
             Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);
@@ -152,8 +152,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             Check.That(id.Argument.Value).IsEqualTo(anyGuid);
             Check.That(id.IsValid).IsFalse();
             Check.ThatCode(() => id.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
             // - validation
             Check.That(validator.HasError).IsTrue();
             Check.That(validator.ErrorCount).IsEqualTo(1);

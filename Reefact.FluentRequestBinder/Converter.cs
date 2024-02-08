@@ -76,27 +76,27 @@ namespace Reefact.FluentRequestBinder {
             return $"{_errors.Count} errors have been recorded.";
         }
 
-        internal RequiredReferenceProperty<TProperty> ConvertRequired<TArgument, TProperty>(ReferenceArgument<TArgument> argument, Func<TArgument, TProperty> convert) {
+        internal RequiredProperty<TProperty> ConvertRequired<TArgument, TProperty>(Argument<TArgument> argument, Func<TArgument, TProperty> convert) {
             if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            ReferenceArgument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
 
             if (prefixedArgument.IsMissing) {
                 _errors.Add(ValidationError.ArgumentIsRequired(prefixedArgument));
 
-                return RequiredReferenceProperty<TProperty>.CreateMissing(prefixedArgument);
+                return RequiredProperty<TProperty>.CreateMissing(prefixedArgument);
             }
 
             try {
-                TProperty                            propertyValue    = convert(argument.Value!);
-                RequiredReferenceProperty<TProperty> requiredProperty = RequiredReferenceProperty<TProperty>.CreateValid(prefixedArgument, propertyValue);
+                TProperty                   propertyValue    = convert(argument.Value!);
+                RequiredProperty<TProperty> requiredProperty = RequiredProperty<TProperty>.CreateValid(prefixedArgument, propertyValue);
 
                 return requiredProperty;
             } catch (BadRequestException ex) {
                 _errors.AddRange(ex.ValidationErrors);
 
-                RequiredReferenceProperty<TProperty> convertRequired = RequiredReferenceProperty<TProperty>.CreateInvalid(prefixedArgument);
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(prefixedArgument);
 
                 return convertRequired;
             } catch (ApplicationException ex) {
@@ -104,17 +104,17 @@ namespace Reefact.FluentRequestBinder {
 
                 ValidationError error = new(prefixedArgument.Name, ex.Message);
                 _errors.Add(error);
-                RequiredReferenceProperty<TProperty> convertRequired = RequiredReferenceProperty<TProperty>.CreateInvalid(argument);
+                RequiredProperty<TProperty> convertRequired = RequiredProperty<TProperty>.CreateInvalid(argument);
 
                 return convertRequired;
             }
         }
 
-        internal OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(ReferenceArgument<TArgument> argument, Func<TArgument, TProperty> convert) {
+        internal OptionalProperty<TProperty> ConvertOptional<TArgument, TProperty>(Argument<TArgument> argument, Func<TArgument, TProperty> convert) {
             if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
             if (convert  == null) { throw new ArgumentNullException(nameof(convert)); }
 
-            ReferenceArgument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
 
             if (prefixedArgument.IsMissing) { return OptionalProperty<TProperty>.CreateMissing(prefixedArgument); }
 
@@ -134,17 +134,17 @@ namespace Reefact.FluentRequestBinder {
             }
         }
 
-        internal RequiredReferenceProperty<TArgument> IsRequired<TArgument>(ReferenceArgument<TArgument> argument) {
+        internal RequiredProperty<TArgument> IsRequired<TArgument>(Argument<TArgument> argument) {
             if (argument == null) { throw new ArgumentNullException(nameof(argument)); }
 
-            ReferenceArgument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
+            Argument<TArgument> prefixedArgument = argument.AppendPrefix(ArgumentPrefix);
 
-            if (prefixedArgument.IsFulfilled) { return RequiredReferenceProperty<TArgument>.CreateValid(prefixedArgument, prefixedArgument.Value!); }
+            if (prefixedArgument.IsFulfilled) { return RequiredProperty<TArgument>.CreateValid(prefixedArgument, prefixedArgument.Value!); }
 
             ValidationError error = new(prefixedArgument.Name, "Argument is required.");
             _errors.Add(error);
 
-            return RequiredReferenceProperty<TArgument>.CreateMissing(prefixedArgument);
+            return RequiredProperty<TArgument>.CreateMissing(prefixedArgument);
         }
 
     }

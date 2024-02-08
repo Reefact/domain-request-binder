@@ -24,7 +24,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind               = Bind.PropertiesOf(requestWithoutUser);
 
             // Exercise
-            RequiredReferenceProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
+            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -49,7 +49,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             RequestConverter<Request_v1> bind = Bind.PropertiesOf(requestWithoutUserName);
 
             // Exercise
-            RequiredReferenceProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
+            RequiredProperty<User> user = bind.ComplexProperty(r => r.User).AsRequired(UserConverter.Convert!);
 
             // Verify
             // - property
@@ -99,8 +99,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - required property
             Check.That(roles.IsValid).IsFalse();
             Check.ThatCode(() => roles.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
 
             // - binder
             Check.That(bind.HasError).IsTrue();
@@ -155,7 +155,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - property
             Check.That(roles.IsValid).IsTrue();
             Check.That(roles.IsMissing).IsFalse();
-            Check.That(roles.ArgumentName).IsEqualTo("Roles");
+            Check.That(roles.Argument.Name).IsEqualTo("Roles");
             Check.That(roles.Value).IsEquivalentTo(new Role("ADM", "Administrator"), new Role("DEV", "Developer"));
 
             // - binder
@@ -227,7 +227,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // Verify
             // - property
             Check.That(friendIds.IsValid).IsTrue();
-            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Argument.Name).IsEqualTo("FriendIds");
             Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
 
             // - binder
@@ -247,8 +247,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - required property
             Check.That(friendIds.IsValid).IsFalse();
             Check.ThatCode(() => friendIds.Value)
-                 .Throws<InvalidOperationException>()
-                 .WithMessage("Property is not valid.");
+                 .Throws<PropertyException>()
+                 .WithMessage(ExceptionMessage.Property_ValueIsInvalid);
 
             // - binder
             Check.That(bind.HasError).IsTrue();
@@ -307,7 +307,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             // - property
             Check.That(friendIds.IsValid).IsTrue();
             Check.That(friendIds.IsMissing).IsFalse();
-            Check.That(friendIds.ArgumentName).IsEqualTo("FriendIds");
+            Check.That(friendIds.Argument.Name).IsEqualTo("FriendIds");
             Check.That(friendIds.Value).IsEquivalentTo(AnyId.From(guid1), AnyId.From(guid2));
 
             // - binder
@@ -367,9 +367,8 @@ namespace Reefact.FluentRequestBinder.UnitTests {
         public void handle_correctly_required_simple_property() {
             // Setup
             ArgumentsConverter bind = Bind.Arguments();
-
             // Exercise
-            RequiredValueProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
+            RequiredProperty<int> @int = bind.SimpleProperty("toto", "42").AsRequired(int.Parse);
 
             // Verify
             Check.That(@int.IsValid).IsTrue();
@@ -395,7 +394,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter bind = Bind.Arguments();
 
             // Exercise
-            RequiredReferenceProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
+            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "37", Unit = "celsius" }).AsRequired(TemperatureConverter.Convert);
 
             // Verify
             Check.That(temperature.IsValid).IsTrue();
@@ -408,7 +407,7 @@ namespace Reefact.FluentRequestBinder.UnitTests {
             ArgumentsConverter bind = Bind.Arguments();
 
             // Exercise
-            RequiredReferenceProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "42", Unit = "GTI-TURBO" }).AsRequired(TemperatureConverter.Convert);
+            RequiredProperty<Temperature> temperature = bind.ComplexProperty(new Temperature_v1 { Value = "42", Unit = "GTI-TURBO" }).AsRequired(TemperatureConverter.Convert);
 
             // Verify
             // - property

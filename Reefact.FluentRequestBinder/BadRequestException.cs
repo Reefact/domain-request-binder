@@ -10,7 +10,7 @@ namespace Reefact.FluentRequestBinder {
     ///     The exceptions thrown in the event of a request validation error.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public class BadRequestException : ApplicationException {
+    public class BadRequestException : FluentRequestBinderException {
 
         #region Statics members declarations
 
@@ -29,7 +29,7 @@ namespace Reefact.FluentRequestBinder {
 
         #region Constructors declarations
 
-        private BadRequestException(ValidationError[] errors) {
+        private BadRequestException(ValidationError[] errors) : base("Request is invalid.") {
             ValidationErrors = errors;
         }
 

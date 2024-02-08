@@ -7,6 +7,14 @@
     ///     This class is a specific type of ApplicationException that can be thrown when the Fluent Request Binder encounters
     ///     an error.
     /// </remarks>
-    public class FluentRequestBinderException(string message) : ApplicationException(message) { }
+    public class FluentRequestBinderException : ApplicationException {
+
+        #region Constructors declarations
+
+        public FluentRequestBinderException(string message) : base(message) { }
+
+        #endregion
+
+    }
 
 }

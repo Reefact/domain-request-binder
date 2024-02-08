@@ -1,7 +1,5 @@
 ﻿#region Usings declarations
 
-using System;
-
 #endregion
 
 namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
@@ -10,13 +8,15 @@ namespace Reefact.FluentRequestBinder.UnitTests.__forTesting {
 
         #region Constructors declarations
 
-        public User(Guid id, UserName userName) {
+        public User(Guid id, int? age, UserName userName) {
             Id       = id;
+            Age      = age;
             UserName = userName;
         }
 
         #endregion
 
+        public int?     Age      { get; }
         public Guid     Id       { get; }
         public UserName UserName { get; }
 

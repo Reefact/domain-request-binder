@@ -13,21 +13,19 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter               _argumentsValidator;
-        private readonly string                  _argumentName;
-        private readonly IEnumerable<TArgument>? _argumentValues;
+        private readonly Converter                        _argumentsValidator;
+        private readonly Argument<IEnumerable<TArgument>> _argument;
 
         #endregion
 
         #region Constructors declarations
 
-        internal ListOfSimplePropertiesConverter(Converter argumentsValidator, string argumentName, IEnumerable<TArgument>? argumentValues) {
+        internal ListOfSimplePropertiesConverter(Converter argumentsValidator, Argument<IEnumerable<TArgument>> argument) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
 
             _argumentsValidator = argumentsValidator;
-            _argumentName       = argumentName;
-            _argumentValues     = argumentValues;
+            _argument           = argument;
         }
 
         #endregion
@@ -41,29 +39,27 @@ namespace Reefact.FluentRequestBinder {
         public RequiredList<TProperty> AsRequired<TProperty>(Func<TArgument, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValues is null) {
-                _argumentsValidator.RecordError(new ValidationError(_argumentName, "Argument is required."));
+            if (_argument.IsMissing) {
+                _argumentsValidator.RecordError(ValidationError.ArgumentIsRequired(_argument));
 
-                return RequiredList<TProperty>.CreateMissing(_argumentName);
+                return RequiredList<TProperty>.CreateMissing(_argument);
             }
 
             List<TProperty> propertyValues = new();
             int             index          = 0;
-            foreach (TArgument argumentValue in _argumentValues) {
-                string                               argumentName     = $"{_argumentName}[{index}]";
-                ReferenceArgument<TArgument>         argument         = new(argumentName, argumentValue);
-                RequiredReferenceProperty<TProperty> requiredProperty = _argumentsValidator.ConvertRequired(argument, convert);
+            foreach (TArgument argumentValue in _argument.Value!) {
+                string                      argumentName     = $"{_argument.Name}[{index}]";
+                Argument<TArgument>         argument         = new(argumentName, argumentValue);
+                RequiredProperty<TProperty> requiredProperty = _argumentsValidator.ConvertRequired(argument, convert);
                 if (requiredProperty.IsValid) {
                     propertyValues.Add(requiredProperty);
                 }
                 index++;
             }
 
-            if (_argumentsValidator.HasError) {
-                return RequiredList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
-            }
+            if (_argumentsValidator.HasError) { return RequiredList<TProperty>.CreateInvalid(_argument); }
 
-            return RequiredList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return RequiredList<TProperty>.CreateValid(_argument, propertyValues);
         }
 
         /// <summary>
@@ -75,14 +71,14 @@ namespace Reefact.FluentRequestBinder {
         public OptionalList<TProperty> AsOptional<TProperty>(Func<TArgument, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValues is null) { return OptionalList<TProperty>.CreateMissing(_argumentName); }
+            if (_argument.IsMissing) { return OptionalList<TProperty>.CreateMissing(_argument); }
 
             List<TProperty> propertyValues = new();
             int             index          = 0;
-            foreach (TArgument argumentValue in _argumentValues) {
-                string                       argumentName     = $"{_argumentName}[{index}]";
-                ReferenceArgument<TArgument> argument         = new(argumentName, argumentValue);
-                OptionalProperty<TProperty>  optionalProperty = _argumentsValidator.ConvertOptional(argument, convert);
+            foreach (TArgument argumentValue in _argument.Value!) {
+                string                      argumentName     = $"{_argument.Name}[{index}]";
+                Argument<TArgument>         argument         = new(argumentName, argumentValue);
+                OptionalProperty<TProperty> optionalProperty = _argumentsValidator.ConvertOptional(argument, convert);
                 if (optionalProperty is { IsValid: true, IsMissing: false }) {
                     propertyValues.Add(optionalProperty.Value!);
                 }
@@ -90,10 +86,10 @@ namespace Reefact.FluentRequestBinder {
             }
 
             if (_argumentsValidator.HasError) {
-                return OptionalList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
+                return OptionalList<TProperty>.CreateInvalid(_argument);
             }
 
-            return OptionalList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return OptionalList<TProperty>.CreateValid(_argument, propertyValues);
         }
 
     }

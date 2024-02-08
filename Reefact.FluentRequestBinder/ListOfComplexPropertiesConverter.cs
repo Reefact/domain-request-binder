@@ -13,21 +13,19 @@ namespace Reefact.FluentRequestBinder {
 
         #region Fields declarations
 
-        private readonly Converter               _argumentsValidator;
-        private readonly string                  _argumentName;
-        private readonly IEnumerable<TArgument>? _argumentValues;
+        private readonly Converter                        _argumentsValidator;
+        private readonly Argument<IEnumerable<TArgument>> _argument;
 
         #endregion
 
         #region Constructors declarations
 
-        internal ListOfComplexPropertiesConverter(Converter argumentsValidator, string argumentName, IEnumerable<TArgument>? argumentValues) {
+        internal ListOfComplexPropertiesConverter(Converter argumentsValidator, Argument<IEnumerable<TArgument>> argument) {
             if (argumentsValidator is null) { throw new ArgumentNullException(nameof(argumentsValidator)); }
-            if (argumentName is null) { throw new ArgumentNullException(nameof(argumentName)); }
+            if (argument is null) { throw new ArgumentNullException(nameof(argument)); }
 
             _argumentsValidator = argumentsValidator;
-            _argumentName       = argumentName;
-            _argumentValues     = argumentValues;
+            _argument           = argument;
         }
 
         #endregion
@@ -37,21 +35,21 @@ namespace Reefact.FluentRequestBinder {
         /// </summary>
         /// <typeparam name="TProperty">The type of the output property.</typeparam>
         /// <param name="convert">The custom conversion method.</param>
-        /// <returns>The <see cref="RequiredReferenceProperty{TProperty}">required argument</see> conversion result.</returns>
+        /// <returns>The <see cref="RequiredProperty{TProperty}">required argument</see> conversion result.</returns>
         public RequiredList<TProperty> AsRequired<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValues is null) {
-                _argumentsValidator.RecordError(new ValidationError(_argumentName, "Argument is required."));
+            if (_argument.IsMissing) {
+                _argumentsValidator.RecordError(ValidationError.ArgumentIsRequired(_argument));
 
-                return RequiredList<TProperty>.CreateMissing(_argumentName);
+                return RequiredList<TProperty>.CreateMissing(_argument);
             }
 
             List<TProperty> propertyValues = new();
             int             index          = 0;
-            foreach (TArgument argumentValue in _argumentValues) {
+            foreach (TArgument argumentValue in _argument.Value!) {
                 try {
-                    RequestConverter<TArgument> requestConverter = new(argumentValue, _argumentsValidator.Options, $"{_argumentName}[{index}]");
+                    RequestConverter<TArgument> requestConverter = new(argumentValue, _argumentsValidator.Options, $"{_argument.Name}[{index}]");
                     TProperty                   propertyValue    = convert(requestConverter);
                     propertyValues.Add(propertyValue);
                 } catch (BadRequestException ex) {
@@ -60,11 +58,9 @@ namespace Reefact.FluentRequestBinder {
                 index++;
             }
 
-            if (_argumentsValidator.HasError) {
-                return RequiredList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
-            }
+            if (_argumentsValidator.HasError) { return RequiredList<TProperty>.CreateInvalid(_argument); }
 
-            return RequiredList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return RequiredList<TProperty>.CreateValid(_argument, propertyValues);
         }
 
         /// <summary>
@@ -76,13 +72,13 @@ namespace Reefact.FluentRequestBinder {
         public OptionalList<TProperty> AsOptional<TProperty>(Func<RequestConverter<TArgument>, TProperty> convert) {
             if (convert is null) { throw new ArgumentNullException(nameof(convert)); }
 
-            if (_argumentValues is null) { return OptionalList<TProperty>.CreateMissing(_argumentName); }
+            if (_argument.IsMissing) { return OptionalList<TProperty>.CreateMissing(_argument); }
 
             List<TProperty> propertyValues = new();
             int             index          = 0;
-            foreach (TArgument argumentValue in _argumentValues) {
+            foreach (TArgument argumentValue in _argument.Value!) {
                 try {
-                    RequestConverter<TArgument> requestConverter = new(argumentValue, _argumentsValidator.Options, $"{_argumentName}[{index}]");
+                    RequestConverter<TArgument> requestConverter = new(argumentValue, _argumentsValidator.Options, $"{_argument.Name}[{index}]");
                     TProperty                   propertyValue    = convert(requestConverter);
                     propertyValues.Add(propertyValue);
                 } catch (BadRequestException ex) {
@@ -91,11 +87,9 @@ namespace Reefact.FluentRequestBinder {
                 index++;
             }
 
-            if (_argumentsValidator.HasError) {
-                return OptionalList<TProperty>.CreateInvalid(_argumentName, _argumentValues);
-            }
+            if (_argumentsValidator.HasError) { return OptionalList<TProperty>.CreateInvalid(_argument); }
 
-            return OptionalList<TProperty>.CreateValid(_argumentName, _argumentValues, propertyValues);
+            return OptionalList<TProperty>.CreateValid(_argument, propertyValues);
         }
 
     }
